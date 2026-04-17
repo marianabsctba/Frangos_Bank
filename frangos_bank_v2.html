@@ -1,0 +1,658 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
+.hidden{display:none!important}
+.app{min-height:600px;background:#f0f2f5}
+.topbar{background:#cc2200;color:#fff;padding:6px 24px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.navbar{background:#a81900;padding:0 24px;display:flex;align-items:center;gap:32px;height:64px}
+.logo-text{color:#fff;font-size:18px;font-weight:700;letter-spacing:.5px;line-height:1.1}
+.logo-sub{color:#ffcc88;font-size:10px;font-weight:400;letter-spacing:1px}
+.nav-links{display:flex;gap:0;margin-left:auto}
+.nav-links a{color:rgba(255,255,255,.8);padding:0 16px;height:64px;display:flex;align-items:center;font-size:13px;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s}
+.nav-links a:hover,.nav-links a.active{color:#fff;border-bottom-color:#ffcc88;background:rgba(0,0,0,.15)}
+.nav-user{color:#ffcc88;font-size:13px;margin-left:16px;cursor:pointer;padding:8px 14px;border:1px solid rgba(255,200,100,.4);border-radius:4px}
+.login-page{min-height:540px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 16px;background:linear-gradient(160deg,#8b0000 0%,#cc2200 40%,#ff6600 100%)}
+.login-card{background:#fff;border-radius:12px;padding:40px 36px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-duck{font-size:56px;display:block;margin-bottom:8px}
+.login-brand{font-size:22px;font-weight:700;color:#a81900}
+.login-tagline{font-size:12px;color:#888;margin-top:4px}
+.tab-bar{display:flex;border-bottom:2px solid #eee;margin-bottom:20px}
+.tab-btn{flex:1;padding:10px;background:none;border:none;font-size:13px;font-weight:600;color:#999;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+.tab-btn.active{color:#a81900;border-bottom-color:#a81900}
+.form-label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;margin-top:14px;text-transform:uppercase;letter-spacing:.5px}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid #ddd;border-radius:6px;font-size:14px;outline:none;transition:border .2s}
+.form-input:focus{border-color:#cc2200}
+.form-input.error{border-color:#cc0000}
+.login-btn{width:100%;margin-top:20px;padding:13px;background:#cc2200;color:#fff;border:none;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
+.login-btn:hover{background:#a81900}
+.login-btn:disabled{background:#ccc;cursor:not-allowed}
+.link-btn{background:none;border:none;color:#cc2200;font-size:12px;cursor:pointer;text-decoration:underline;padding:0}
+.err-msg{background:#fff0f0;border:1px solid #ffcccc;color:#cc0000;padding:10px 14px;border-radius:6px;font-size:13px;margin-top:10px}
+.ok-msg{background:#f0fff4;border:1px solid #b2dfdb;color:#1a7a3c;padding:10px 14px;border-radius:6px;font-size:13px;margin-top:10px}
+.security-badge{text-align:center;margin-top:16px;font-size:11px;color:#aaa}
+.step-indicator{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px}
+.step-dot{width:28px;height:28px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#999;transition:all .3s}
+.step-dot.active{background:#cc2200;color:#fff}
+.step-dot.done{background:#1a7a3c;color:#fff}
+.step-line{flex:1;height:2px;background:#eee;max-width:32px}
+.step-line.done{background:#1a7a3c}
+.page-wrap{padding:28px 24px;max-width:900px;margin:0 auto}
+.greeting{font-size:22px;font-weight:600;color:#333;margin-bottom:4px}
+.greeting-sub{font-size:13px;color:#888;margin-bottom:24px}
+.balance-card{background:linear-gradient(135deg,#a81900,#ff4400);border-radius:12px;padding:28px;color:#fff;margin-bottom:24px;position:relative;overflow:hidden;cursor:pointer}
+.balance-card::after{content:'🌽';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:72px;opacity:.15}
+.balance-label{font-size:12px;opacity:.8;text-transform:uppercase;letter-spacing:.8px}
+.balance-amount{font-size:40px;font-weight:700;margin:8px 0;letter-spacing:-1px}
+.balance-mlh{font-size:13px;opacity:.7}
+.balance-row{display:flex;gap:24px;margin-top:16px}
+.bal-item{flex:1;background:rgba(255,255,255,.15);border-radius:8px;padding:12px 16px;cursor:pointer}
+.bal-item:hover{background:rgba(255,255,255,.25)}
+.bal-item-label{font-size:11px;opacity:.7}
+.bal-item-val{font-size:16px;font-weight:600;margin-top:2px}
+.cards-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.quick-card{background:#fff;border-radius:10px;padding:18px 14px;text-align:center;cursor:pointer;border:1px solid #eee;transition:all .2s}
+.quick-card:hover{border-color:#cc2200;transform:translateY(-2px);box-shadow:0 4px 12px rgba(204,34,0,.1)}
+.quick-card .qc-icon{font-size:28px;margin-bottom:8px}
+.quick-card .qc-label{font-size:12px;color:#555;font-weight:500}
+.section-title{font-size:15px;font-weight:600;color:#333;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.section-title a{font-size:12px;color:#cc2200;cursor:pointer;font-weight:400}
+.tx-list{background:#fff;border-radius:10px;border:1px solid #eee;overflow:hidden}
+.tx-item{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid #f5f5f5;gap:14px;cursor:pointer;transition:background .15s}
+.tx-item:hover{background:#fff8f8}
+.tx-item:last-child{border-bottom:none}
+.tx-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.tx-info{flex:1}
+.tx-name{font-size:13px;font-weight:600;color:#333}
+.tx-date{font-size:11px;color:#999;margin-top:2px}
+.tx-amount{font-size:14px;font-weight:700}
+.tx-amount.credit{color:#1a7a3c}
+.tx-amount.debit{color:#cc2200}
+.form-section{background:#fff;border-radius:10px;padding:28px;border:1px solid #eee;margin-bottom:16px}
+.form-section h3{font-size:14px;font-weight:600;color:#333;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid #f0f0f0}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-row.single{grid-template-columns:1fr}
+.form-group label{display:block;font-size:12px;font-weight:600;color:#666;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.form-group input,.form-group select{width:100%;padding:10px 13px;border:1.5px solid #ddd;border-radius:6px;font-size:14px;outline:none}
+.form-group input:focus,.form-group select:focus{border-color:#cc2200}
+.submit-btn{background:#cc2200;color:#fff;border:none;padding:13px 32px;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
+.submit-btn:hover{background:#a81900}
+.success-box{background:#f0fff4;border:1px solid #b2dfdb;border-radius:8px;padding:16px;color:#1a7a3c;font-size:13px;margin-top:12px;display:flex;align-items:center;gap:10px}
+.filter-bar{background:#fff;border-radius:10px;padding:16px 18px;border:1px solid #eee;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.filter-bar select,.filter-bar input[type=date]{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;outline:none}
+.filter-btn{padding:8px 18px;background:#cc2200;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer}
+.settings-card{background:#fff;border-radius:10px;border:1px solid #eee;margin-bottom:16px;overflow:hidden}
+.settings-header{padding:16px 20px;border-bottom:1px solid #f0f0f0;font-size:14px;font-weight:600;color:#333}
+.settings-row{display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid #f5f5f5;gap:12px}
+.settings-row:last-child{border-bottom:none}
+.settings-row .s-label{flex:1;font-size:13px;color:#333}
+.settings-row .s-val{font-size:13px;color:#888}
+.toggle{width:44px;height:24px;background:#ddd;border-radius:12px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:#cc2200}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .2s}
+.toggle.on::after{left:23px}
+.edit-link{color:#cc2200;font-size:12px;cursor:pointer;font-weight:500}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px}
+.modal-box{background:#fff;border-radius:12px;padding:32px;max-width:380px;width:100%;text-align:center}
+.modal-icon{font-size:48px;margin-bottom:12px}
+.modal-title{font-size:18px;font-weight:700;color:#333;margin-bottom:8px}
+.modal-msg{font-size:14px;color:#666;margin-bottom:24px;line-height:1.5}
+.modal-btn{padding:11px 28px;background:#cc2200;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}
+.poop-float{position:fixed;pointer-events:none;font-size:32px;z-index:9999;animation:floatUp 1.2s ease-out forwards}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-120px) scale(1.5)}}
+.confetti-piece{position:fixed;pointer-events:none;font-size:20px;z-index:9999;animation:confettiFall 1.5s ease-in forwards}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg)}100%{opacity:0;transform:translateY(100px) rotate(720deg)}}
+.pw-strength{height:4px;border-radius:2px;margin-top:6px;transition:all .3s;background:#eee}
+.pw-label{font-size:11px;margin-top:4px}
+</style>
+
+<div class="app" id="app">
+
+<!-- LOGIN PAGE -->
+<div id="login-page">
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="login-duck">🐥</span>
+        <div class="login-brand">Frango's Bank</div>
+        <div class="login-tagline">Galinheiro Hall • Sua moeda: 🌽 $MLH Milho</div>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Entrar</button>
+        <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Abrir conta</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="form-login">
+        <label class="form-label">E-mail ou CPF</label>
+        <input class="form-input" type="text" id="login-user" placeholder="seu@email.com ou 000.000.000-00"/>
+        <label class="form-label">Senha</label>
+        <input class="form-input" type="password" id="login-pass" placeholder="Digite sua senha"/>
+        <div id="login-err" class="err-msg hidden">E-mail/CPF ou senha incorretos.</div>
+        <button class="login-btn" onclick="doLogin()">Acessar minha conta</button>
+        <div style="text-align:center;margin-top:12px">
+          <button class="link-btn" onclick="showModal('forgot')">Esqueci minha senha</button>
+        </div>
+        <div class="security-badge">🔒 Conexão segura SSL 128-bit — Galinheiro Hall</div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="form-register" class="hidden">
+        <div class="step-indicator" id="step-indicator">
+          <div class="step-dot active" id="sdot-1">1</div>
+          <div class="step-line" id="sline-1"></div>
+          <div class="step-dot" id="sdot-2">2</div>
+          <div class="step-line" id="sline-2"></div>
+          <div class="step-dot" id="sdot-3">3</div>
+        </div>
+
+        <!-- STEP 1: Dados pessoais -->
+        <div id="reg-step-1">
+          <label class="form-label">Nome completo</label>
+          <input class="form-input" type="text" id="reg-nome" placeholder="Seu nome completo"/>
+          <label class="form-label">CPF</label>
+          <input class="form-input" type="text" id="reg-cpf" placeholder="000.000.000-00" maxlength="14"/>
+          <label class="form-label">Data de nascimento</label>
+          <input class="form-input" type="date" id="reg-nasc"/>
+          <label class="form-label">Telefone / WhatsApp</label>
+          <input class="form-input" type="text" id="reg-tel" placeholder="(11) 99999-9999"/>
+          <div id="reg-err-1" class="err-msg hidden">Preencha todos os campos.</div>
+          <button class="login-btn" onclick="regNext(1)">Continuar →</button>
+        </div>
+
+        <!-- STEP 2: Acesso -->
+        <div id="reg-step-2" class="hidden">
+          <label class="form-label">E-mail</label>
+          <input class="form-input" type="email" id="reg-email" placeholder="seu@email.com"/>
+          <label class="form-label">Confirmar e-mail</label>
+          <input class="form-input" type="email" id="reg-email2" placeholder="seu@email.com"/>
+          <label class="form-label">Senha</label>
+          <input class="form-input" type="password" id="reg-senha" placeholder="Mínimo 8 caracteres" oninput="checkPwStrength()"/>
+          <div class="pw-strength" id="pw-bar"></div>
+          <div class="pw-label" id="pw-label" style="color:#999"></div>
+          <label class="form-label">Confirmar senha</label>
+          <input class="form-input" type="password" id="reg-senha2" placeholder="Repita a senha"/>
+          <div id="reg-err-2" class="err-msg hidden">Verifique os campos.</div>
+          <div style="display:flex;gap:10px;margin-top:20px">
+            <button class="login-btn" style="background:#888;flex:1" onclick="regBack(2)">← Voltar</button>
+            <button class="login-btn" style="flex:2" onclick="regNext(2)">Continuar →</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Endereço + finalizar -->
+        <div id="reg-step-3" class="hidden">
+          <label class="form-label">CEP</label>
+          <input class="form-input" type="text" id="reg-cep" placeholder="00000-000" maxlength="9" oninput="buscarCEP()"/>
+          <label class="form-label">Endereço</label>
+          <input class="form-input" type="text" id="reg-end" placeholder="Rua, número"/>
+          <label class="form-label">Cidade / Estado</label>
+          <input class="form-input" type="text" id="reg-cidade" placeholder="São Paulo / SP"/>
+          <div style="margin-top:14px;font-size:12px;color:#888;line-height:1.6">
+            <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+              <input type="checkbox" id="reg-terms" style="margin-top:2px"/>
+              Concordo com os <span style="color:#cc2200;cursor:pointer" onclick="showModal('terms')">Termos e Condições</span> do Frango's Bank S.A.
+            </label>
+          </div>
+          <div id="reg-err-3" class="err-msg hidden">Preencha todos os campos e aceite os termos.</div>
+          <div id="reg-success" class="ok-msg hidden">🐥 Conta criada! Acesse com seu e-mail e senha.</div>
+          <div style="display:flex;gap:10px;margin-top:20px">
+            <button class="login-btn" style="background:#888;flex:1" onclick="regBack(3)">← Voltar</button>
+            <button class="login-btn" style="flex:2" id="btn-finalizar" onclick="finalizarConta()">Criar conta 🌽</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" class="hidden">
+  <div class="topbar">
+    <span>Frango's Bank S.A. — Galinheiro Hall, Av. das Galinhas, 1234 — CNPJ 00.000.000/0001-00</span>
+    <span id="topbar-user">Olá, <b>Usuário</b></span>
+  </div>
+  <div class="navbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:28px">🐥</span>
+      <div>
+        <div class="logo-text">Frango's Bank</div>
+        <div class="logo-sub">GALINHEIRO HALL</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a id="nav-dashboard" class="active" onclick="showPage('dashboard')">Início</a>
+      <a id="nav-transfer" onclick="showPage('transfer')">Transferir</a>
+      <a id="nav-extrato" onclick="showPage('extrato')">Extrato</a>
+      <a id="nav-pagamentos" onclick="showPage('pagamentos')">Pagamentos</a>
+      <a id="nav-settings" onclick="showPage('settings')">Minha Conta</a>
+    </div>
+    <span class="nav-user" onclick="doLogout()">Sair ↗</span>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard" class="page-wrap">
+    <div class="greeting" id="dash-greeting">Bom dia! 👋</div>
+    <div class="greeting-sub">Quarta-feira, 17 de abril de 2026 — Clique no saldo para ouvir seu dinheiro 🐔</div>
+    <div class="balance-card" onclick="playCoco()">
+      <div class="balance-label">Saldo disponível — clique para comemorar</div>
+      <div class="balance-amount" id="main-balance">🌽 18.430,00</div>
+      <div class="balance-mlh">$MLH Milho — Frango's Bank</div>
+      <div class="balance-row">
+        <div class="bal-item" onclick="playCoco(event)"><div class="bal-item-label">Poupança</div><div class="bal-item-val">🌽 5.210,00</div></div>
+        <div class="bal-item" onclick="playCoco(event)"><div class="bal-item-label">Limite crédito</div><div class="bal-item-val">🌽 3.000,00</div></div>
+        <div class="bal-item" onclick="playCoco(event)"><div class="bal-item-label">Investimentos</div><div class="bal-item-val">🌽 12.800,00</div></div>
+      </div>
+    </div>
+    <div class="cards-row">
+      <div class="quick-card" onclick="showPage('transfer');playCoco()"><div class="qc-icon">💸</div><div class="qc-label">Transferir</div></div>
+      <div class="quick-card" onclick="showPage('pagamentos')"><div class="qc-icon">📄</div><div class="qc-label">Pagar boleto</div></div>
+      <div class="quick-card" onclick="showPage('extrato')"><div class="qc-icon">📊</div><div class="qc-label">Extrato</div></div>
+      <div class="quick-card" onclick="showModal('pix');playCoco()"><div class="qc-icon">⚡</div><div class="qc-label">Pix</div></div>
+    </div>
+    <div class="section-title">Últimas movimentações <a onclick="showPage('extrato')">Ver todas →</a></div>
+    <div class="tx-list" id="tx-list"></div>
+  </div>
+
+  <!-- TRANSFER -->
+  <div id="page-transfer" class="page-wrap hidden">
+    <div class="greeting">Transferência</div>
+    <div class="greeting-sub">TED, DOC ou Pix para qualquer banco</div>
+    <div class="form-section">
+      <h3>Dados do destinatário</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Tipo</label><select id="tr-tipo"><option>TED</option><option>DOC</option><option>Pix — CPF</option><option>Pix — E-mail</option><option>Pix — Chave aleatória</option></select></div>
+        <div class="form-group"><label>Banco</label><select id="tr-banco"><option>001 — Banco do Brasil</option><option>033 — Santander</option><option>104 — Caixa</option><option>237 — Bradesco</option><option>341 — Itaú</option><option>077 — Inter</option><option>260 — Nubank</option><option>756 — Sicoob</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Agência</label><input type="text" id="tr-ag" placeholder="0000"/></div>
+        <div class="form-group"><label>Conta</label><input type="text" id="tr-conta" placeholder="00000-0"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nome do favorecido</label><input type="text" id="tr-nome" placeholder="Nome completo"/></div>
+        <div class="form-group"><label>CPF / CNPJ</label><input type="text" id="tr-cpf" placeholder="000.000.000-00"/></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <h3>Valores e agendamento</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Valor ($MLH)</label><input type="text" id="tr-valor" placeholder="0,00"/></div>
+        <div class="form-group"><label>Data</label><input type="date" id="tr-data"/></div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group"><label>Descrição</label><input type="text" id="tr-desc" placeholder="Opcional"/></div>
+      </div>
+    </div>
+    <button class="submit-btn" onclick="doTransfer()">Confirmar transferência</button>
+    <div id="transfer-success" class="success-box hidden">✅ Transferência realizada! Comprovante: <b id="comp-num"></b></div>
+  </div>
+
+  <!-- EXTRATO -->
+  <div id="page-extrato" class="page-wrap hidden">
+    <div class="greeting">Extrato</div>
+    <div class="greeting-sub" id="ext-sub">Conta Corrente</div>
+    <div class="filter-bar">
+      <select><option>Conta Corrente</option><option>Poupança</option></select>
+      <select id="ext-periodo"><option>Últimos 30 dias</option><option>Últimos 60 dias</option><option>Últimos 90 dias</option></select>
+      <button class="filter-btn">Filtrar</button>
+      <button class="filter-btn" style="background:#555" onclick="exportCSV()">Exportar CSV</button>
+    </div>
+    <div class="tx-list" id="ext-list"></div>
+  </div>
+
+  <!-- PAGAMENTOS -->
+  <div id="page-pagamentos" class="page-wrap hidden">
+    <div class="greeting">Pagamentos</div>
+    <div class="greeting-sub">Boletos, contas e tributos</div>
+    <div class="form-section">
+      <h3>Pagar boleto</h3>
+      <div class="form-row single">
+        <div class="form-group"><label>Código de barras</label><input type="text" id="boleto-cod" placeholder="000 0.00000 00000.000000 0 00000000000000"/></div>
+      </div>
+      <div id="boleto-details" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label>Beneficiário</label><input type="text" id="bol-ben" readonly/></div>
+          <div class="form-group"><label>Valor ($MLH)</label><input type="text" id="bol-valor" readonly/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Vencimento</label><input type="text" id="bol-venc" readonly/></div>
+          <div class="form-group"><label>Data pagamento</label><input type="date" id="bol-datapag"/></div>
+        </div>
+      </div>
+      <button class="submit-btn" onclick="lerBoleto()" id="btn-ler-boleto">Ler boleto</button>
+      <button class="submit-btn hidden" id="btn-pagar-boleto" onclick="pagarBoleto()">Confirmar pagamento</button>
+      <div id="boleto-success" class="success-box hidden">✅ Boleto pago com sucesso!</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="page-settings" class="page-wrap hidden">
+    <div class="greeting">Minha Conta</div>
+    <div class="greeting-sub">Perfil, segurança e preferências</div>
+    <div class="settings-card">
+      <div class="settings-header">Dados pessoais</div>
+      <div class="settings-row"><span class="s-label">Nome</span><span class="s-val" id="set-nome">—</span><span class="edit-link">Editar</span></div>
+      <div class="settings-row"><span class="s-label">E-mail</span><span class="s-val" id="set-email">—</span><span class="edit-link">Editar</span></div>
+      <div class="settings-row"><span class="s-label">CPF</span><span class="s-val" id="set-cpf">—</span></div>
+      <div class="settings-row"><span class="s-label">Telefone</span><span class="s-val" id="set-tel">—</span><span class="edit-link">Editar</span></div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-header">Segurança</div>
+      <div class="settings-row"><span class="s-label">Senha de acesso</span><span class="s-val">••••••••</span><span class="edit-link">Alterar</span></div>
+      <div class="settings-row"><span class="s-label">Autenticação em 2 fatores</span><div class="toggle" onclick="toggleSet(this)"></div></div>
+      <div class="settings-row"><span class="s-label">Notificações por SMS</span><div class="toggle on" onclick="toggleSet(this)"></div></div>
+      <div class="settings-row"><span class="s-label">Notificações por e-mail</span><div class="toggle on" onclick="toggleSet(this)"></div></div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-header">Limites</div>
+      <div class="settings-row"><span class="s-label">Limite TED/DOC diário</span><span class="s-val">🌽 5.000,00</span><span class="edit-link">Alterar</span></div>
+      <div class="settings-row"><span class="s-label">Limite Pix diário</span><span class="s-val">🌽 2.000,00</span><span class="edit-link">Alterar</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay hidden" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">✅</div>
+    <div class="modal-title" id="modal-title">Título</div>
+    <div class="modal-msg" id="modal-msg">Mensagem</div>
+    <button class="modal-btn" onclick="closeModal()">OK</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const USERS={
+  "cornelio@frangosbank.com":  {pass:"senha123", name:"Cornélio Pinto",   cpf:"123.456.789-00", tel:"(11) 98765-4321", ag:"0042", cc:"12345-6", bal:18430},
+  "admin@frangosbank.com":     {pass:"admin",    name:"Administrador",    cpf:"000.000.000-00", tel:"(11) 00000-0000", ag:"0001", cc:"00001-0", bal:999999},
+  "maria@email.com":           {pass:"1234",     name:"Maria Galinha",    cpf:"987.654.321-00", tel:"(11) 91111-2222", ag:"0042", cc:"12345-7", bal:3200},
+  "cornelio":                  {pass:"senha123", name:"Cornélio Pinto",   cpf:"123.456.789-00", tel:"(11) 98765-4321", ag:"0042", cc:"12345-6", bal:18430},
+};
+let currentUser=null, userBal=0;
+const TRANSACTIONS=[
+  {icon:"🏪",bg:"#fff3e0",name:"Supermercado Bico de Ouro",date:"16/04/2026",amount:340.50,type:"debit"},
+  {icon:"💰",bg:"#e8f5e9",name:"Salário — Granja Tech LTDA",date:"15/04/2026",amount:6800.00,type:"credit"},
+  {icon:"💡",bg:"#fff3e0",name:"Energia Elétrica — GalinhaLight",date:"14/04/2026",amount:189.90,type:"debit"},
+  {icon:"🏠",bg:"#fff3e0",name:"Aluguel — Av. das Galinhas",date:"10/04/2026",amount:1200.00,type:"debit"},
+  {icon:"💸",bg:"#e8f5e9",name:"Pix recebido — Pintinha Souza",date:"09/04/2026",amount:500.00,type:"credit"},
+  {icon:"📱",bg:"#fff3e0",name:"Plano celular — FrangoFone",date:"08/04/2026",amount:79.90,type:"debit"},
+  {icon:"🎓",bg:"#fff3e0",name:"Mensalidade escola",date:"05/04/2026",amount:450.00,type:"debit"},
+  {icon:"💰",bg:"#e8f5e9",name:"Rendimento poupança",date:"01/04/2026",amount:18.40,type:"credit"},
+];
+
+// ── SOUND: cocó de galinha via Web Audio API ──────────────────
+function playCoco(e){
+  if(e)e.stopPropagation();
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const t=ctx.currentTime;
+    // squawk 1
+    const o1=ctx.createOscillator(), g1=ctx.createGain();
+    o1.type='sawtooth'; o1.frequency.setValueAtTime(800,t); o1.frequency.exponentialRampToValueAtTime(300,t+0.15);
+    g1.gain.setValueAtTime(0.3,t); g1.gain.exponentialRampToValueAtTime(0.01,t+0.18);
+    o1.connect(g1); g1.connect(ctx.destination);
+    o1.start(t); o1.stop(t+0.18);
+    // squawk 2
+    const o2=ctx.createOscillator(), g2=ctx.createGain();
+    o2.type='sawtooth'; o2.frequency.setValueAtTime(900,t+0.22); o2.frequency.exponentialRampToValueAtTime(350,t+0.38);
+    g2.gain.setValueAtTime(0.25,t+0.22); g2.gain.exponentialRampToValueAtTime(0.01,t+0.4);
+    o2.connect(g2); g2.connect(ctx.destination);
+    o2.start(t+0.22); o2.stop(t+0.4);
+    // cluck
+    const o3=ctx.createOscillator(), g3=ctx.createGain();
+    o3.type='square'; o3.frequency.setValueAtTime(600,t+0.45); o3.frequency.exponentialRampToValueAtTime(200,t+0.55);
+    g3.gain.setValueAtTime(0.15,t+0.45); g3.gain.exponentialRampToValueAtTime(0.01,t+0.58);
+    o3.connect(g3); g3.connect(ctx.destination);
+    o3.start(t+0.45); o3.stop(t+0.58);
+    // poop emoji float
+    spawnEmoji(e,'💩');
+  }catch(err){}
+}
+
+function spawnEmoji(e,emoji){
+  const el=document.createElement('div');
+  el.className='poop-float';
+  el.textContent=emoji;
+  const x=e?e.clientX:window.innerWidth/2;
+  const y=e?e.clientY:300;
+  el.style.cssText=`left:${x-16}px;top:${y-16}px`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1300);
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(t){
+  document.getElementById('tab-login').classList.toggle('active',t==='login');
+  document.getElementById('tab-register').classList.toggle('active',t==='register');
+  document.getElementById('form-login').classList.toggle('hidden',t!=='login');
+  document.getElementById('form-register').classList.toggle('hidden',t!=='register');
+}
+
+// ── REGISTER ──────────────────────────────────────────────────
+let regStep=1;
+function regNext(step){
+  const err=document.getElementById('reg-err-'+step);
+  if(step===1){
+    const n=document.getElementById('reg-nome').value.trim();
+    const c=document.getElementById('reg-cpf').value.trim();
+    const d=document.getElementById('reg-nasc').value;
+    const t=document.getElementById('reg-tel').value.trim();
+    if(!n||!c||!d||!t){err.classList.remove('hidden');return;}
+    err.classList.add('hidden');
+  }
+  if(step===2){
+    const e1=document.getElementById('reg-email').value.trim();
+    const e2=document.getElementById('reg-email2').value.trim();
+    const s1=document.getElementById('reg-senha').value;
+    const s2=document.getElementById('reg-senha2').value;
+    if(!e1||!e2||!s1||!s2){err.textContent='Preencha todos os campos.';err.classList.remove('hidden');return;}
+    if(e1!==e2){err.textContent='Os e-mails não coincidem.';err.classList.remove('hidden');return;}
+    if(s1!==s2){err.textContent='As senhas não coincidem.';err.classList.remove('hidden');return;}
+    if(s1.length<6){err.textContent='Senha muito curta (mín. 6 caracteres).';err.classList.remove('hidden');return;}
+    err.classList.add('hidden');
+  }
+  document.getElementById('reg-step-'+step).classList.add('hidden');
+  document.getElementById('sdot-'+step).classList.remove('active');
+  document.getElementById('sdot-'+step).classList.add('done');
+  document.getElementById('sline-'+step).classList.add('done');
+  regStep=step+1;
+  document.getElementById('reg-step-'+regStep).classList.remove('hidden');
+  document.getElementById('sdot-'+regStep).classList.add('active');
+}
+function regBack(step){
+  document.getElementById('reg-step-'+step).classList.add('hidden');
+  document.getElementById('sdot-'+(step-1)).classList.remove('done');
+  document.getElementById('sdot-'+(step-1)).classList.add('active');
+  document.getElementById('sline-'+(step-1)).classList.remove('done');
+  document.getElementById('sdot-'+step).classList.remove('active');
+  regStep=step-1;
+  document.getElementById('reg-step-'+regStep).classList.remove('hidden');
+}
+
+function checkPwStrength(){
+  const pw=document.getElementById('reg-senha').value;
+  const bar=document.getElementById('pw-bar');
+  const lbl=document.getElementById('pw-label');
+  let score=0;
+  if(pw.length>=8)score++;
+  if(/[A-Z]/.test(pw))score++;
+  if(/[0-9]/.test(pw))score++;
+  if(/[^A-Za-z0-9]/.test(pw))score++;
+  const levels=[
+    {color:'#eee',label:''},
+    {color:'#e53935',label:'Fraca'},
+    {color:'#fb8c00',label:'Razoável'},
+    {color:'#fdd835',label:'Boa'},
+    {color:'#43a047',label:'Forte 🌽'},
+  ];
+  const lv=levels[score]||levels[0];
+  bar.style.background=lv.color;
+  bar.style.width=(score*25)+'%';
+  lbl.textContent=lv.label;
+  lbl.style.color=lv.color;
+}
+
+function buscarCEP(){
+  const cep=document.getElementById('reg-cep').value.replace(/\D/g,'');
+  if(cep.length===8){
+    document.getElementById('reg-end').value='Rua das Galinhas, 42';
+    document.getElementById('reg-cidade').value='São Paulo / SP';
+  }
+}
+
+function finalizarConta(){
+  const end=document.getElementById('reg-end').value.trim();
+  const terms=document.getElementById('reg-terms').checked;
+  const err=document.getElementById('reg-err-3');
+  if(!end||!terms){err.classList.remove('hidden');return;}
+  err.classList.add('hidden');
+  const email=document.getElementById('reg-email').value.trim();
+  const nome=document.getElementById('reg-nome').value.trim();
+  const senha=document.getElementById('reg-senha').value;
+  const cpf=document.getElementById('reg-cpf').value.trim();
+  const tel=document.getElementById('reg-tel').value.trim();
+  USERS[email.toLowerCase()]={pass:senha,name:nome,cpf:cpf,tel:tel,ag:'0042',cc:String(Math.floor(Math.random()*90000)+10000)+'-'+Math.floor(Math.random()*10),bal:0};
+  document.getElementById('reg-success').classList.remove('hidden');
+  document.getElementById('btn-finalizar').disabled=true;
+  playCoco();
+  // confetti
+  const emojis=['🌽','🐥','💰','🎉'];
+  for(let i=0;i<8;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='confetti-piece';
+      el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.cssText=`left:${Math.random()*80+10}%;top:30%`;
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),1600);
+    },i*120);
+  }
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim().toLowerCase();
+  const p=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-err');
+  const match=USERS[u]||null;
+  if(match && match.pass===p){
+    currentUser=match;
+    userBal=currentUser.bal;
+    err.classList.add('hidden');
+    document.getElementById('login-page').classList.add('hidden');
+    document.getElementById('main-app').classList.remove('hidden');
+    document.getElementById('topbar-user').innerHTML=`Olá, <b>${currentUser.name}</b> | Ag: ${currentUser.ag} | CC: ${currentUser.cc}`;
+    document.getElementById('dash-greeting').textContent=`Bom dia, ${currentUser.name.split(' ')[0]}! 👋`;
+    document.getElementById('main-balance').textContent=`🌽 ${userBal.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    document.getElementById('ext-sub').textContent=`Conta Corrente ${currentUser.cc} — Agência ${currentUser.ag}`;
+    document.getElementById('set-nome').textContent=currentUser.name;
+    document.getElementById('set-email').textContent=u.includes('@')?u:'(CPF)';
+    document.getElementById('set-cpf').textContent=currentUser.cpf;
+    document.getElementById('set-tel').textContent=currentUser.tel;
+    renderTx('tx-list',TRANSACTIONS);
+    renderTx('ext-list',TRANSACTIONS);
+    showPage('dashboard');
+    playCoco();
+  } else {
+    err.classList.remove('hidden');
+  }
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!document.getElementById('login-page').classList.contains('hidden'))doLogin()});
+
+function doLogout(){
+  document.getElementById('main-app').classList.add('hidden');
+  document.getElementById('login-page').classList.remove('hidden');
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  currentUser=null;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function renderTx(id,items){
+  document.getElementById(id).innerHTML=items.map(t=>`
+    <div class="tx-item" onclick="playCoco(event)">
+      <div class="tx-icon" style="background:${t.bg}">${t.icon}</div>
+      <div class="tx-info">
+        <div class="tx-name">${t.name}</div>
+        <div class="tx-date">${t.date}</div>
+      </div>
+      <div class="tx-amount ${t.type}">${t.type==='credit'?'+':'-'}🌽 ${t.amount.toFixed(2).replace('.',',')}</div>
+    </div>`).join('');
+}
+
+function showPage(pg){
+  ['dashboard','transfer','extrato','pagamentos','settings'].forEach(p=>{
+    document.getElementById('page-'+p).classList.add('hidden');
+    const n=document.getElementById('nav-'+p);
+    if(n)n.classList.remove('active');
+  });
+  document.getElementById('page-'+pg).classList.remove('hidden');
+  const n=document.getElementById('nav-'+pg);
+  if(n)n.classList.add('active');
+}
+
+function doTransfer(){
+  const val=parseFloat((document.getElementById('tr-valor').value||'0').replace(',','.'));
+  const nome=document.getElementById('tr-nome').value.trim();
+  if(!nome||val<=0){showModal('error');return;}
+  if(val>userBal){showModal('funds');return;}
+  userBal-=val;
+  document.getElementById('main-balance').textContent=`🌽 ${userBal.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+  const comp='FB'+Date.now().toString().slice(-8);
+  document.getElementById('comp-num').textContent=comp;
+  document.getElementById('transfer-success').classList.remove('hidden');
+  TRANSACTIONS.unshift({icon:'💸',bg:'#fff3e0',name:'TED — '+nome,date:'17/04/2026',amount:val,type:'debit'});
+  renderTx('tx-list',TRANSACTIONS);
+  renderTx('ext-list',TRANSACTIONS);
+  playCoco();
+}
+
+function lerBoleto(){
+  const cod=document.getElementById('boleto-cod').value.trim();
+  if(cod.length<10){showModal('boletoerr');return;}
+  document.getElementById('bol-ben').value='Granja Elétrica S.A.';
+  document.getElementById('bol-valor').value='189,90';
+  document.getElementById('bol-venc').value='20/04/2026';
+  document.getElementById('boleto-details').style.display='grid';
+  document.getElementById('btn-ler-boleto').classList.add('hidden');
+  document.getElementById('btn-pagar-boleto').classList.remove('hidden');
+}
+
+function pagarBoleto(){
+  document.getElementById('boleto-success').classList.remove('hidden');
+  document.getElementById('btn-pagar-boleto').classList.add('hidden');
+  userBal-=189.90;
+  document.getElementById('main-balance').textContent=`🌽 ${userBal.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+  playCoco();
+}
+
+function exportCSV(){
+  const rows=['Data,Descrição,Valor',...TRANSACTIONS.map(t=>`${t.date},"${t.name}",${t.type==='credit'?'+':'-'}${t.amount.toFixed(2)}`)];
+  const blob=new Blob([rows.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='extrato_frangos_bank.csv';
+  a.click();
+}
+
+function toggleSet(el){el.classList.toggle('on')}
+
+const MODALS={
+  forgot:{icon:'🔑',title:'Recuperar senha',msg:'Um link de recuperação será enviado para o seu e-mail cadastrado.'},
+  pix:{icon:'⚡',title:'Pix',msg:'Sua chave Pix: cornelio@email.com\nUse Transferir → Pix para enviar.'},
+  error:{icon:'⚠️',title:'Dados inválidos',msg:'Preencha todos os campos corretamente.'},
+  funds:{icon:'❌',title:'Saldo insuficiente',msg:'Você não possui saldo suficiente para esta operação.'},
+  boletoerr:{icon:'⚠️',title:'Boleto inválido',msg:'Código de barras inválido.'},
+  terms:{icon:'📄',title:'Termos e Condições',msg:'Ao abrir uma conta no Frango\'s Bank, você concorda com a guarda de seus dados no Galinheiro Hall, conversão de valores para $MLH Milho, e que cocós de galinha são a trilha sonora oficial de suas finanças.'},
+};
+function showModal(type){
+  const m=MODALS[type]||{icon:'ℹ️',title:'Aviso',msg:'Em desenvolvimento.'};
+  document.getElementById('modal-icon').textContent=m.icon;
+  document.getElementById('modal-title').textContent=m.title;
+  document.getElementById('modal-msg').textContent=m.msg;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal(){document.getElementById('modal-overlay').classList.add('hidden')}
+</script>
